@@ -8,6 +8,7 @@ import {
   useSpring,
   useTransform,
   AnimatePresence,
+  type Variants,
 } from "framer-motion";
 import {
   Github,
@@ -23,12 +24,13 @@ import {
 import Image from "next/image";
 
 export default function Portfolio() {
+  // whether Afkaa portal expanded or not
   const [isExpanded, setIsExpanded] = useState(false);
 
   // ref for positioning of rive element
   const mascotRef = useRef<HTMLDivElement | null>(null);
 
-  // calculate center of the portal
+  // calculate center of the portal (for clipPath)
   const [portalCenter, setPortalCenter] = useState({ x: 0, y: 0 });
 
   // helper fn to recenter portal
@@ -41,7 +43,7 @@ export default function Portfolio() {
     });
   };
 
-  // calculate and initialize centering the portal
+  // initialize + keep portal center accurate on resize
   useLayoutEffect(() => {
     const update = () => {
       if (!mascotRef.current) return;
@@ -57,11 +59,12 @@ export default function Portfolio() {
     return () => window.removeEventListener("resize", update);
   }, []);
 
-  // mouse parallax
+  // mouse parallax state values
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const mouseX = useSpring(x, { stiffness: 120, damping: 18 });
   const mouseY = useSpring(y, { stiffness: 120, damping: 18 });
+
   const rotateX = useTransform(mouseY, [-0.5, 0.5], [8, -8]);
   const rotateY = useTransform(mouseX, [-0.5, 0.5], [-8, 8]);
   const imgX = useTransform(mouseX, [-0.5, 0.5], [14, -14]);
@@ -70,19 +73,20 @@ export default function Portfolio() {
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isExpanded) return;
     const rect = e.currentTarget.getBoundingClientRect();
+    // normalized values for mouse movement -0.5 to 0.5
     x.set((e.clientX - rect.left) / rect.width - 0.5);
     y.set((e.clientY - rect.top) / rect.height - 0.5);
   };
 
-  // scroll to bio on <2xl
+  // scroll to the bio section when user clicks the "scroll" button (only for <2xl)
   const scrollToBio = () => {
     document
       .getElementById("bio")
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  // animation variants
-  const containerVariants = {
+  // ✅ typed variants (fixes Vercel/TS Variants errors)
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -90,18 +94,17 @@ export default function Portfolio() {
     },
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { y: 24, opacity: 0, filter: "blur(8px)" },
     visible: {
       y: 0,
       opacity: 1,
       filter: "blur(0px)",
-      transition: { type: "spring" as const, stiffness: 90, damping: 14 },
+      transition: { type: "spring", stiffness: 90, damping: 14 },
     },
   };
 
   return (
-    // ✅ 2xl density bump so 4K doesn't look tiny
     <main className="relative min-h-screen w-full overflow-x-hidden bg-[#09090b] font-sans text-zinc-100 selection:bg-yellow-500/30 text-[15px] sm:text-[16px] 2xl:text-[18px]">
       {/* 1) THE YELLOW PORTAL LAYER */}
       <motion.div
@@ -128,13 +131,13 @@ export default function Portfolio() {
               <button
                 type="button"
                 onClick={() => setIsExpanded(false)}
-                className="fixed top-6 right-6 sm:top-10 sm:right-10 p-4 bg-yellow-900/10 hover:bg-yellow-900/20 rounded-full transition-all hover:rotate-90 z-[70]"
+                className="fixed top-6 left-6 sm:top-10 sm:left-10 p-4 bg-yellow-900/10 hover:bg-yellow-900/20 rounded-full transition-all hover:rotate-90 z-[70]"
                 aria-label="Close"
               >
                 <X size={28} />
               </button>
 
-              {/* Header Section */}
+              {/* Header */}
               <motion.div variants={itemVariants} className="mb-12">
                 <h2 className="text-xs sm:text-sm font-black uppercase tracking-[0.45em] mb-4 opacity-70 flex items-center gap-3">
                   <span className="h-px w-8 bg-yellow-950/30" />
@@ -148,7 +151,7 @@ export default function Portfolio() {
                 </p>
               </motion.div>
 
-              {/* Core Features Section */}
+              {/* Core Features + Case Study + CTA */}
               <motion.div variants={itemVariants} className="space-y-16">
                 <div className="space-y-6">
                   <h3 className="text-sm font-black uppercase tracking-widest border-b border-yellow-950/10 pb-2">
@@ -168,7 +171,6 @@ export default function Portfolio() {
                   </div>
                 </div>
 
-                {/* Case Study */}
                 <motion.div variants={itemVariants} className="space-y-6 pt-8">
                   <div className="flex items-center justify-between border-b border-yellow-950/10 pb-2">
                     <h3 className="text-sm font-black uppercase tracking-widest">
@@ -198,7 +200,6 @@ export default function Portfolio() {
                   </p>
                 </motion.div>
 
-                {/* CTA */}
                 <div className="space-y-6">
                   <h3 className="text-sm font-black uppercase tracking-widest border-b border-yellow-950/10 pb-2">
                     Check It Out
@@ -251,177 +252,201 @@ export default function Portfolio() {
         </svg>
       </div>
 
-      {/* 3) HERO
-          - <2xl: single column + scroll button to bio below
-          - 2xl+: 2 columns (hero + bio) and hide the below-bio section
-      */}
+      {/* 3) HERO: <2xl single column, 2xl+ two columns */}
       <section
         className={[
           "relative z-30 w-full px-5 sm:px-8",
-          "min-h-[100svh] pt-10 pb-28 sm:pt-12 sm:pb-32 2xl:pb-12",
+          // ✅ reserve space for the button row (prevents cut-off on short heights)
+          "min-h-[100svh] grid grid-rows-[1fr_auto]",
+          "pt-6 sm:pt-8 pb-4 sm:pb-6",
           "transition-opacity duration-500",
           isExpanded ? "opacity-0 pointer-events-none" : "opacity-100",
-          "grid place-items-center",
         ].join(" ")}
       >
-        <div className="mx-auto w-full max-w-7xl">
-          <div className="grid items-center gap-10 2xl:grid-cols-[minmax(0,1fr)_520px]">
-            {/* LEFT: HERO */}
-            <div className="w-full flex flex-col items-center text-center 2xl:items-start 2xl:text-left">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.88, y: 30 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.9, delay: 0.2 }}
-                style={{
-                  rotateX,
-                  rotateY,
-                  transformStyle: "preserve-3d",
-                  perspective: "1200px",
-                }}
-                onMouseMove={handleMouseMove}
-                onMouseLeave={() => {
-                  x.set(0);
-                  y.set(0);
-                }}
-                className="group relative cursor-pointer"
-              >
-                {/* ✅ predictable step sizing (rem-like), no "tiny avatar on huge viewport" */}
-                <div className="relative mx-auto 2xl:mx-0 h-[16rem] w-[16rem] sm:h-[18rem] sm:w-[18rem] lg:h-[19rem] lg:w-[19rem] xl:h-[20rem] xl:w-[20rem] 2xl:h-[22rem] 2xl:w-[22rem]">
-                  <div className="absolute inset-0 rounded-[3.4rem] sm:rounded-[4.1rem] bg-gradient-to-b from-zinc-900 to-black border-[5px] border-zinc-800/80 overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.7),inset_0_0_40px_rgba(0,0,0,0.6)] ring-1 ring-white/5">
-                    <motion.div
-                      style={{ x: imgX, y: imgY }}
-                      className="relative h-full w-full scale-[1.12] will-change-transform"
-                    >
-                      <Image
-                        src="/profile1.jpg"
-                        alt="Radwan Ahmed"
-                        fill
-                        priority
-                        sizes="(max-width: 768px) 80vw, (max-width: 1536px) 20rem, 22rem"
-                        className="object-cover grayscale-[0.55] opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000 ease-out"
-                      />
-                    </motion.div>
+        {/* Row 1: hero content (centered) */}
+        <div className="min-h-0 flex items-center justify-center">
+          <div className="mx-auto w-full max-w-7xl">
+            <div className="grid items-center gap-10 2xl:grid-cols-[minmax(0,1fr)_520px]">
+              {/* LEFT: HERO CONTENT */}
+              <div className="w-full flex flex-col items-center text-center 2xl:items-start 2xl:text-left">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.88, y: 30 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ duration: 0.9, delay: 0.2 }}
+                  style={{
+                    rotateX,
+                    rotateY,
+                    transformStyle: "preserve-3d",
+                    perspective: "1200px",
+                  }}
+                  onMouseMove={handleMouseMove}
+                  onMouseLeave={() => {
+                    x.set(0);
+                    y.set(0);
+                  }}
+                  className="group relative cursor-pointer"
+                >
+                  {/* predictable step sizing (doesn't explode on big screens) */}
+                  <div className="relative mx-auto 2xl:mx-0 h-[16rem] w-[16rem] sm:h-[18rem] sm:w-[18rem] md:h-[15rem] md:w-[15rem] lg:h-[19rem] lg:w-[19rem] xl:h-[20rem] xl:w-[20rem] 2xl:h-[22rem] 2xl:w-[22rem]">
+                    <div className="absolute inset-0 rounded-[3.4rem] sm:rounded-[4.1rem] bg-gradient-to-b from-zinc-900 to-black border-[5px] border-zinc-800/80 overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.7),inset_0_0_40px_rgba(0,0,0,0.6)] ring-1 ring-white/5">
+                      <motion.div
+                        style={{ x: imgX, y: imgY }}
+                        className="relative h-full w-full scale-[1.12] will-change-transform"
+                      >
+                        <Image
+                          src="/profile1.jpg"
+                          alt="Radwan Ahmed"
+                          fill
+                          priority
+                          sizes="(max-width: 768px) 80vw, (max-width: 1536px) 20rem, 22rem"
+                          className="object-cover grayscale-[0.55] opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000 ease-out"
+                        />
+                      </motion.div>
+                    </div>
                   </div>
-                </div>
 
-                <div className="absolute inset-[-2rem] rounded-full bg-yellow-400/10 opacity-0 group-hover:opacity-30 blur-3xl transition-opacity duration-1000 pointer-events-none" />
-              </motion.div>
+                  <div className="absolute inset-[-2rem] rounded-full bg-yellow-400/10 opacity-0 group-hover:opacity-30 blur-3xl transition-opacity duration-1000 pointer-events-none" />
+                </motion.div>
 
-              <motion.h1
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                className="mt-6 select-none flex flex-col items-center 2xl:items-start uppercase italic font-black tracking-tighter leading-[0.88]"
-              >
-                <motion.span
-                  variants={itemVariants}
-                  className="text-[clamp(2.8rem,4vw,5.2rem)]"
+                <motion.h1
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className="mt-6 select-none flex flex-col items-center 2xl:items-start uppercase italic font-black tracking-tighter leading-[0.88]"
                 >
-                  Radwan
-                </motion.span>
-                <motion.span
-                  variants={itemVariants}
-                  className="text-[clamp(2.8rem,4vw,5.2rem)] text-zinc-600/90"
-                >
-                  Ahmed
-                </motion.span>
-              </motion.h1>
-
-              <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                className="mt-6 sm:mt-7 flex flex-wrap justify-center 2xl:justify-start gap-4 px-4 py-3 bg-zinc-900/50 backdrop-blur-lg rounded-3xl border border-white/5 shadow-xl"
-              >
-                <NavIcon label="GitHub" color="bg-zinc-800" icon={Github} />
-                <NavIcon
-                  label="LinkedIn"
-                  color="bg-[#0077B5]/90"
-                  icon={Linkedin}
-                />
-              </motion.div>
-              {/* Scroll button ONLY on laptop/smaller (single-column mode) */}
-
-              {!isExpanded && (
-                <div className="my-2 md:my-20 lg:hidden flex justify-center">
-                  <motion.button
-                    type="button"
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 0.8, y: 0 }}
-                    whileHover={{ opacity: 1, scale: 1.04 }}
-                    transition={{ delay: 1.2, duration: 0.55 }}
-                    onClick={scrollToBio}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-900/60 backdrop-blur border border-white/10 text-sm font-medium text-zinc-300 hover:text-white hover:border-white/30 transition-all"
+                  <motion.span
+                    variants={itemVariants}
+                    className="text-[clamp(2.8rem,4vw,5.2rem)]"
                   >
-                    <span>Scroll</span>
-                    <motion.div
-                      animate={{ y: [0, 6, 0] }}
-                      transition={{
-                        repeat: Infinity,
-                        duration: 1.6,
-                        ease: "easeInOut",
-                      }}
-                    >
-                      <ChevronDown size={18} />
-                    </motion.div>
-                  </motion.button>
-                </div>
-              )}
-            </div>
+                    Radwan
+                  </motion.span>
+                  <motion.span
+                    variants={itemVariants}
+                    className="text-[clamp(2.8rem,4vw,5.2rem)] text-zinc-600/90"
+                  >
+                    Ahmed
+                  </motion.span>
+                </motion.h1>
 
-            {/* RIGHT: BIO PANEL (2xl+ only) */}
-            <div className="hidden 2xl:block">
-              <div className="rounded-3xl border border-white/8 bg-zinc-950/65 backdrop-blur-xl p-7 shadow-2xl">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-black uppercase tracking-[0.4em] text-zinc-500">
-                      Bio
+                <motion.div
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className="mt-6 sm:mt-7 flex flex-wrap justify-center 2xl:justify-start gap-4 px-4 py-3 bg-zinc-900/50 backdrop-blur-lg rounded-3xl border border-white/5 shadow-xl"
+                >
+                  <NavIcon
+                    href="https://github.com/cattleherd"
+                    label="GitHub"
+                    color="bg-zinc-800"
+                    icon={Github}
+                  />
+                  <NavIcon
+                    href="https://www.linkedin.com/in/radwan-ahmed-to/"
+                    label="LinkedIn"
+                    color="bg-[#0077B5]/90"
+                    icon={Linkedin}
+                  />
+                </motion.div>
+              </div>
+
+              {/* RIGHT: BIO DOCK (2xl+) */}
+              <div className="hidden 2xl:block">
+                <div className="rounded-3xl border border-white/8 bg-zinc-950/65 backdrop-blur-xl p-7 shadow-2xl">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-[0.4em] text-zinc-500">
+                        Bio
+                      </p>
+                      <h2 className="mt-2 text-2xl font-black tracking-tight text-white">
+                        4th-year CS student building motion-first interfaces
+                      </h2>
+                    </div>
+
+                    <div className="inline-flex items-center gap-2 rounded-2xl bg-zinc-900/50 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-zinc-300 border border-white/10">
+                      <span className="h-2 w-2 rounded-full bg-yellow-400 animate-pulse" />
+                      Toronto
+                    </div>
+                  </div>
+
+                  {/* internal scroll keeps hero “fit” even if text grows */}
+                  <div className="mt-5 max-h-[55svh] overflow-y-auto pr-2 custom-scrollbar">
+                    <p className="text-[clamp(1rem,0.9vw,1.2rem)] leading-relaxed text-zinc-300/90">
+                      I’m a 4th-year Computer Science student at Thompson Rivers
+                      University. I like designing interfaces, learning new
+                      tools (currently diving into motion design), and building
+                      products that feel smooth, playful, and genuinely
+                      enjoyable to use.
                     </p>
-                    <h2 className="mt-2 text-2xl font-black tracking-tight text-white">
-                      Lorem ipsum
-                    </h2>
-                  </div>
-                  <div className="inline-flex items-center gap-2 rounded-2xl bg-zinc-900/50 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-zinc-300 border border-white/10">
-                    <span className="h-2 w-2 rounded-full bg-yellow-400 animate-pulse" />
-                    Toronto
-                  </div>
-                </div>
 
-                {/* internal scroll keeps page "fit" even if content grows */}
-                <div className="mt-5 max-h-[55svh] overflow-y-auto pr-2 custom-scrollbar">
-                  <p className="text-[clamp(1rem,0.9vw,1.2rem)] leading-relaxed text-zinc-300/90">
-                    Lorem upsum
-                  </p>
+                    <div className="mt-6 grid grid-cols-1 gap-4">
+                      <div className="rounded-2xl bg-zinc-900/40 border border-white/10 p-5">
+                        <p className="text-xs font-black uppercase tracking-wider text-zinc-400">
+                          Stack
+                        </p>
+                        <p className="mt-2 text-sm text-zinc-200">
+                          React.js • React Native • Figma • Rive • JavaScript
+                        </p>
+                      </div>
 
-                  <div className="mt-6 grid grid-cols-1 gap-4">
-                    <div className="rounded-2xl bg-zinc-900/40 border border-white/10 p-5">
+                      <div className="rounded-2xl bg-zinc-900/40 border border-white/10 p-5">
+                        <p className="text-xs font-black uppercase tracking-wider text-zinc-400">
+                          Focus
+                        </p>
+                        <p className="mt-2 text-sm text-zinc-200">
+                          Interface design • Mobile app development • Motion
+                          design • Shipping usable products
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 rounded-2xl bg-zinc-900/30 border border-white/10 p-5">
                       <p className="text-xs font-black uppercase tracking-wider text-zinc-400">
-                        Stack
+                        Tip
                       </p>
                       <p className="mt-2 text-sm text-zinc-200">
-                        Next.js • TypeScript • Rive • Framer Motion
+                        Tap the floating Afkaa mascot to open the project
+                        portal.
                       </p>
                     </div>
                   </div>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => setIsExpanded(true)}
-                  className="mt-6 w-full rounded-2xl bg-yellow-400/10 border border-yellow-400/20 py-3 text-sm font-black uppercase tracking-wider text-yellow-200 hover:bg-yellow-400/15 transition"
-                >
-                  Open Afkaa Portal
-                </button>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Row 2: scroll button anchored (never clipped) */}
+        {!isExpanded && (
+          <div className="2xl:hidden flex justify-center pt-2 sm:pt-4 [@media(max-height:650px)]:hidden">
+            <motion.button
+              type="button"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 0.8, y: 0 }}
+              whileHover={{ opacity: 1, scale: 1.04 }}
+              transition={{ delay: 1.2, duration: 0.55 }}
+              onClick={scrollToBio}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-900/60 backdrop-blur border border-white/10 text-sm font-medium text-zinc-300 hover:text-white hover:border-white/30 transition-all"
+            >
+              <span>Scroll</span>
+              <motion.div
+                animate={{ y: [0, 6, 0] }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 1.6,
+                  ease: "easeInOut",
+                }}
+              >
+                <ChevronDown size={18} />
+              </motion.div>
+            </motion.button>
+          </div>
+        )}
       </section>
 
-      {/* 4) BIO SECTION (visible on <2xl only) */}
+      {/* 4) BIO SECTION (for <2xl only) */}
       <section
         id="bio"
-        className="2xl:hidden relative z-30 px-5 sm:px-8 pb-24 pt-16 sm:pt-20"
+        className="relative z-30 2xl:hidden px-5 sm:px-8 pb-24 pt-10 sm:pt-14"
       >
         <div className="mx-auto max-w-3xl">
           <div className="rounded-3xl border border-white/8 bg-zinc-950/65 backdrop-blur-xl p-6 sm:p-9 shadow-2xl">
@@ -431,7 +456,7 @@ export default function Portfolio() {
                   Bio
                 </p>
                 <h2 className="mt-2 text-2xl sm:text-3xl font-black tracking-tight text-white">
-                  Lorem ipsum
+                  4th-year CS student building motion-first interfaces
                 </h2>
               </div>
               <div className="inline-flex items-center gap-2 rounded-2xl bg-zinc-900/50 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-zinc-300 border border-white/10">
@@ -441,7 +466,10 @@ export default function Portfolio() {
             </div>
 
             <p className="mt-6 text-base sm:text-lg leading-relaxed text-zinc-300/90">
-              Lorem upsum
+              I’m a 4th-year Computer Science student at Thompson Rivers
+              University. I like designing interfaces, learning new things
+              (currently learning motion design), and building products that
+              people actually enjoy using.
             </p>
 
             <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -450,7 +478,17 @@ export default function Portfolio() {
                   Stack
                 </p>
                 <p className="mt-2 text-sm text-zinc-200">
-                  Next.js • TypeScript • Rive • Framer Motion
+                  React.js • React Native • Figma • Rive
+                </p>
+              </div>
+
+              <div className="rounded-2xl bg-zinc-900/40 border border-white/10 p-5">
+                <p className="text-xs font-black uppercase tracking-wider text-zinc-400">
+                  Focus
+                </p>
+                <p className="mt-2 text-sm text-zinc-200">
+                  Software Engineering • Interface and motion design • Shipping
+                  usable products
                 </p>
               </div>
             </div>
@@ -472,11 +510,20 @@ export default function Portfolio() {
           <Rive src="/afkaa.riv" stateMachines="State Machine 1" />
         </div>
       </motion.div>
+      {/* Footer */}
+      <footer className="relative z-30 border-t border-white/10 px-5 sm:px-8 py-10 text-center text-xs sm:text-sm text-zinc-500">
+        <div className="mx-auto max-w-7xl">
+          <p className="tracking-wide">
+            © {new Date().getFullYear()} Radwan Ahmed. All rights reserved.
+          </p>
+        </div>
+      </footer>
     </main>
   );
 }
 
-// Helper Components
+/* ---------------- Helper Components ---------------- */
+
 function FeatureItem({
   icon: Icon,
   title,
@@ -498,37 +545,41 @@ function FeatureItem({
     </div>
   );
 }
-
 function NavIcon({
   label,
   color,
   icon: Icon,
+  href,
 }: {
   label: string;
   color: string;
   icon: any;
+  href: string;
 }) {
-  const variants = {
+  const variants: Variants = {
     hidden: { scale: 0, opacity: 0 },
     visible: { scale: 1, opacity: 1 },
   };
 
   return (
-    <motion.button
-      type="button"
+    <motion.a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
       variants={variants}
       whileHover={{ y: -6, scale: 1.1 }}
       whileTap={{ scale: 0.92 }}
       className="flex flex-col items-center gap-1.5 group"
+      aria-label={label}
     >
       <div
-        className={`h-11 w-11 sm:h-[52px] sm:w-[52px] ${color} rounded-xl shadow-md flex items-center justify-center transition-all group-hover:rotate-3`}
+        className={`h-11 w-11 sm:h-12 sm:w-12 ${color} rounded-xl shadow-md flex items-center justify-center transition-all group-hover:rotate-3`}
       >
         <Icon size={20} className="text-white" strokeWidth={2.4} />
       </div>
       <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-zinc-400 group-hover:text-zinc-200">
         {label}
       </span>
-    </motion.button>
+    </motion.a>
   );
 }
