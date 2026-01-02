@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState, useEffect } from "react";
 import Rive from "@rive-app/react-canvas";
 import {
   motion,
@@ -24,6 +24,8 @@ import {
 import Image from "next/image";
 
 export default function Portfolio() {
+  const [showBubble, setShowBubble] = useState(false);
+
   // whether Afkaa portal expanded or not
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -59,6 +61,19 @@ export default function Portfolio() {
     return () => window.removeEventListener("resize", update);
   }, []);
 
+  // show the bubble 3 seconds after the page loads
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowBubble(true);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // automatically hide the bubble if the user expands the portal
+  useEffect(() => {
+    if (isExpanded) setShowBubble(false);
+  }, [isExpanded]);
+
   // mouse parallax state values
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -85,7 +100,7 @@ export default function Portfolio() {
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  // ✅ typed variants (fixes Vercel/TS Variants errors)
+  // animation values for parent container
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -94,6 +109,7 @@ export default function Portfolio() {
     },
   };
 
+  // animation values for child elements
   const itemVariants: Variants = {
     hidden: { y: 24, opacity: 0, filter: "blur(8px)" },
     visible: {
@@ -105,7 +121,7 @@ export default function Portfolio() {
   };
 
   return (
-    <main className="relative min-h-screen w-full overflow-x-hidden bg-[#09090b] font-sans text-zinc-100 selection:bg-yellow-500/30 text-[15px] sm:text-[16px] 2xl:text-[18px]">
+    <main className="relative min-h-screen w-full overflow-x-hidden bg-[#060607] font-sans text-zinc-100 selection:bg-yellow-500/30 text-[15px] sm:text-[16px] 2xl:text-[18px]">
       {/* 1) THE YELLOW PORTAL LAYER */}
       <motion.div
         initial={false}
@@ -236,22 +252,6 @@ export default function Portfolio() {
         </AnimatePresence>
       </motion.div>
 
-      {/* 2) GLOBAL GRAIN OVERLAY */}
-      <div className="pointer-events-none absolute inset-0 z-[100] opacity-10 mix-blend-overlay">
-        <svg className="h-full w-full">
-          <filter id="grain">
-            <feTurbulence
-              type="fractalNoise"
-              baseFrequency="0.7"
-              numOctaves="3"
-              stitchTiles="stitch"
-            />
-            <feColorMatrix type="saturate" values="0" />
-          </filter>
-          <rect width="100%" height="100%" filter="url(#grain)" />
-        </svg>
-      </div>
-
       {/* 3) HERO: <2xl single column, 2xl+ two columns */}
       <section
         className={[
@@ -263,7 +263,7 @@ export default function Portfolio() {
           isExpanded ? "opacity-0 pointer-events-none" : "opacity-100",
         ].join(" ")}
       >
-        {/* Row 1: hero content (centered) */}
+        {/* Row 1: hero content */}
         <div className="min-h-0 flex items-center justify-center">
           <div className="mx-auto w-full max-w-7xl">
             <div className="grid items-center gap-10 2xl:grid-cols-[minmax(0,1fr)_520px]">
@@ -286,7 +286,6 @@ export default function Portfolio() {
                   }}
                   className="group relative cursor-pointer"
                 >
-                  {/* predictable step sizing (doesn't explode on big screens) */}
                   <div className="relative mx-auto 2xl:mx-0 h-[16rem] w-[16rem] sm:h-[18rem] sm:w-[18rem] md:h-[15rem] md:w-[15rem] lg:h-[19rem] lg:w-[19rem] xl:h-[20rem] xl:w-[20rem] 2xl:h-[22rem] 2xl:w-[22rem]">
                     <div className="absolute inset-0 rounded-[3.4rem] sm:rounded-[4.1rem] bg-gradient-to-b from-zinc-900 to-black border-[5px] border-zinc-800/80 overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.7),inset_0_0_40px_rgba(0,0,0,0.6)] ring-1 ring-white/5">
                       <motion.div
@@ -304,10 +303,8 @@ export default function Portfolio() {
                       </motion.div>
                     </div>
                   </div>
-
                   <div className="absolute inset-[-2rem] rounded-full bg-yellow-400/10 opacity-0 group-hover:opacity-30 blur-3xl transition-opacity duration-1000 pointer-events-none" />
                 </motion.div>
-
                 <motion.h1
                   variants={containerVariants}
                   initial="hidden"
@@ -349,7 +346,7 @@ export default function Portfolio() {
                 </motion.div>
               </div>
 
-              {/* RIGHT: BIO DOCK (2xl+) */}
+              {/* RIGHT: BIO (2xl+) */}
               <div className="hidden 2xl:block">
                 <div className="rounded-3xl border border-white/8 bg-zinc-950/65 backdrop-blur-xl p-7 shadow-2xl">
                   <div className="flex items-start justify-between gap-4">
@@ -358,24 +355,21 @@ export default function Portfolio() {
                         Bio
                       </p>
                       <h2 className="mt-2 text-2xl font-black tracking-tight text-white">
-                        Hello!
+                        Radwan Ahmed
                       </h2>
-                    </div>
-
-                    <div className="inline-flex items-center gap-2 rounded-2xl bg-zinc-900/50 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-zinc-300 border border-white/10">
-                      <span className="h-2 w-2 rounded-full bg-yellow-400 animate-pulse" />
-                      Toronto
+                      <p className="mt-1 text-sm text-zinc-300/80">
+                        Software Engineer • Frontend (React/React Native) • UX +
+                        Motion
+                      </p>
                     </div>
                   </div>
-
-                  {/* internal scroll keeps hero “fit” even if text grows */}
-                  <div className="mt-5 max-h-[55svh] overflow-y-auto pr-2 custom-scrollbar">
+                  <div className="mt-5 max-h-[55svh] overflow-y-auto pr-2">
                     <p className="text-[clamp(1rem,0.9vw,1.2rem)] leading-relaxed text-zinc-300/90">
                       I’m a 4th-year Computer Science student at Thompson Rivers
-                      University. I like designing interfaces, learning new
-                      tools (currently diving into motion design), and building
-                      products that feel smooth, playful, and genuinely
-                      enjoyable to use.
+                      University, based in Toronto. I build
+                      fast, accessible interfaces and product experiences—mainly
+                      in React and React Native—then polish them with strong UX
+                      and motion so they feel intentional, not “template-y.”
                     </p>
 
                     <div className="mt-6 grid grid-cols-1 gap-4">
@@ -384,29 +378,10 @@ export default function Portfolio() {
                           Stack
                         </p>
                         <p className="mt-2 text-sm text-zinc-200">
-                          React.js • React Native • Figma • Rive • JavaScript
+                          React • React Native • JavaScript • Node/Express •
+                          MongoDB • Figma • Rive
                         </p>
                       </div>
-
-                      <div className="rounded-2xl bg-zinc-900/40 border border-white/10 p-5">
-                        <p className="text-xs font-black uppercase tracking-wider text-zinc-400">
-                          Focus
-                        </p>
-                        <p className="mt-2 text-sm text-zinc-200">
-                          Interface design • Mobile app development • Motion
-                          design • Shipping usable products
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="mt-6 rounded-2xl bg-zinc-900/30 border border-white/10 p-5">
-                      <p className="text-xs font-black uppercase tracking-wider text-zinc-400">
-                        Tip
-                      </p>
-                      <p className="mt-2 text-sm text-zinc-200">
-                        Tap the floating Afkaa mascot to open the project
-                        portal.
-                      </p>
                     </div>
                   </div>
                 </div>
@@ -415,7 +390,7 @@ export default function Portfolio() {
           </div>
         </div>
 
-        {/* Row 2: scroll button anchored (never clipped) */}
+        {/* Row 2: scroll button */}
         {!isExpanded && (
           <div className="2xl:hidden flex justify-center pt-2 sm:pt-4 [@media(max-height:650px)]:hidden">
             <motion.button
@@ -427,7 +402,6 @@ export default function Portfolio() {
               onClick={scrollToBio}
               className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-900/60 backdrop-blur border border-white/10 text-sm font-medium text-zinc-300 hover:text-white hover:border-white/30 transition-all"
             >
-              <span>Scroll</span>
               <motion.div
                 animate={{ y: [0, 6, 0] }}
                 transition={{
@@ -456,20 +430,20 @@ export default function Portfolio() {
                   Bio
                 </p>
                 <h2 className="mt-2 text-2xl sm:text-3xl font-black tracking-tight text-white">
-                  Hello!
+                  Radwan Ahmed
                 </h2>
-              </div>
-              <div className="inline-flex items-center gap-2 rounded-2xl bg-zinc-900/50 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-zinc-300 border border-white/10">
-                <span className="h-2 w-2 rounded-full bg-yellow-400 animate-pulse" />
-                Toronto
+                <p className="mt-1 text-sm sm:text-base text-zinc-300/80">
+                  Software Engineer • Frontend (React/React Native) • UX +
+                  Motion
+                </p>
               </div>
             </div>
 
             <p className="mt-6 text-base sm:text-lg leading-relaxed text-zinc-300/90">
               I’m a 4th-year Computer Science student at Thompson Rivers
-              University. I like designing interfaces, learning new things
-              (currently learning motion design), and building products that
-              people actually enjoy using.
+              University. I build fast, accessible interfaces
+              and product experiences—mainly in React and React Native—and use
+              strong UX + motion to make them feel intentional and polished.
             </p>
 
             <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -478,17 +452,8 @@ export default function Portfolio() {
                   Stack
                 </p>
                 <p className="mt-2 text-sm text-zinc-200">
-                  React.js • React Native • Figma • Rive
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-zinc-900/40 border border-white/10 p-5">
-                <p className="text-xs font-black uppercase tracking-wider text-zinc-400">
-                  Focus
-                </p>
-                <p className="mt-2 text-sm text-zinc-200">
-                  Software Engineering • Interface and motion design • Shipping
-                  usable products
+                  React • React Native • JavaScript • Node/Express • MongoDB •
+                  Figma • Rive
                 </p>
               </div>
             </div>
@@ -496,25 +461,76 @@ export default function Portfolio() {
         </div>
       </section>
 
-      {/* 5) FLOATING AFKAA MASCOT */}
-      <motion.div
-        ref={mascotRef}
-        onAnimationComplete={() => recenterPortal()}
-        initial={{ opacity: 0, scale: 0.6, x: 30 }}
-        animate={{ opacity: 1, scale: 1, x: 0 }}
-        transition={{ delay: 1.1, type: "spring", stiffness: 180, damping: 15 }}
-        onClick={() => setIsExpanded((prev) => !prev)}
-        className="fixed top-5 right-5 sm:top-8 sm:right-8 z-[110] cursor-pointer group"
-      >
-        <div className="relative h-[120px] w-[120px] rounded-full shadow-xl overflow-hidden ring-1 ring-white/5 transition-all duration-300 group-hover:scale-110">
-          <Rive src="/afkaa.riv" stateMachines="State Machine 1" />
-        </div>
-      </motion.div>
+      {/* 5) FLOATING AFKAA MASCOT WITH CHAT BUBBLE */}
+      <div className="fixed top-5 right-5 sm:top-8 sm:right-8 z-[110]">
+        <AnimatePresence>
+          {showBubble && !isExpanded && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.5, x: "-50%" }}
+              animate={
+                showBubble && !isExpanded
+                  ? {
+                      opacity: 1,
+                      y: [0, -6, 0],
+                      scale: 1,
+                      x: "-50%",
+                      transition: {
+                        opacity: { duration: 0.4 },
+                        scale: { duration: 0.4 },
+                        y: {
+                          repeat: Infinity,
+                          duration: 2.2,
+                          ease: "easeInOut",
+                        },
+                      },
+                    }
+                  : { opacity: 0, scale: 0.6 }
+              }
+              exit={{
+                opacity: 0,
+                scale: 0.5,
+                x: "-50%",
+                transition: { duration: 0.25 },
+              }}
+              className="absolute left-1/2 -top-2 w-auto min-w-[90px] -translate-x-1/2 
+             bg-zinc-900 text-white px-2 py-2.5 rounded-2xl 
+    shadow-2xl shadow-black/60 backdrop-blur-sm
+    border border-white/10
+             pointer-events-none z-[120]"
+            >
+              <p className="text-[13px] font-black uppercase italic tracking-tight whitespace-nowrap">
+                Click me!
+              </p>
+
+              {/* Bubble tail */}
+              <div className="absolute -bottom-1.5 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 bg-zinc-900" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <motion.div
+          ref={mascotRef}
+          onAnimationComplete={() => recenterPortal()}
+          initial={{ opacity: 0, scale: 0.6, x: 30 }}
+          animate={{ opacity: 1, scale: 1, x: 0 }}
+          transition={{
+            delay: 1.1,
+            type: "spring",
+            stiffness: 180,
+            damping: 15,
+          }}
+          onClick={() => setIsExpanded((prev) => !prev)}
+          className="cursor-pointer group"
+        >
+          <div className="pointer-events-none relative h-[120px] w-[120px] rounded-full shadow-xl overflow-hidden ring-1 ring-white/5 transition-all duration-300 group-hover:scale-110">
+            <Rive src="/afkaa.riv" stateMachines="State Machine 1" />
+          </div>
+        </motion.div>
+      </div>
       {/* Footer */}
       <footer className="relative z-30 border-t border-white/10 px-5 sm:px-8 py-10 text-center text-xs sm:text-sm text-zinc-500">
         <div className="mx-auto max-w-7xl">
           <p className="tracking-wide">
-            © {new Date().getFullYear()} Radwan Ahmed. All rights reserved.
+            © {new Date().getFullYear()} Radwan Ahmed
           </p>
         </div>
       </footer>
