@@ -358,7 +358,7 @@ export default function Portfolio() {
                         Bio
                       </p>
                       <h2 className="mt-2 text-2xl font-black tracking-tight text-white">
-                        4th-year CS student building motion-first interfaces
+                        Hello!
                       </h2>
                     </div>
 
@@ -456,7 +456,7 @@ export default function Portfolio() {
                   Bio
                 </p>
                 <h2 className="mt-2 text-2xl sm:text-3xl font-black tracking-tight text-white">
-                  4th-year CS student building motion-first interfaces
+                  Hello!
                 </h2>
               </div>
               <div className="inline-flex items-center gap-2 rounded-2xl bg-zinc-900/50 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-zinc-300 border border-white/10">
