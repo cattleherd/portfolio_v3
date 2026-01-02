@@ -236,157 +236,168 @@ export default function Portfolio() {
       </motion.div>
 
       {/* Hero Section */}
-      {/* Hero Section (100svh container, nothing gets cut off) */}
       <section
-        className={`relative z-30 w-full h-[100svh] px-5 sm:px-8 pt-6 sm:pt-8 pb-6 flex flex-col transition-opacity duration-500 ${
+        className={`relative z-30 w-full h-[100svh] 2xl:h-[auto] flex flex-col transition-opacity duration-500 ${
           isExpanded ? "opacity-0 pointer-events-none" : "opacity-100"
         }`}
       >
-        {/* Row 1: Main content (min-h-0 allows shrinking inside 100svh) */}
-        <div className="flex-1 min-h-0 flex items-center justify-center">
-          <div className="w-full max-w-7xl min-h-0">
-            <div className="grid gap-8 lg:gap-12 2xl:grid-cols-[1.1fr_1fr] 2xl:items-center min-h-0">
-              {/* Left - Portrait + Name + Links (+ compact bio preview on small screens) */}
-              <div className="flex flex-col items-center text-center 2xl:items-start 2xl:text-left min-h-0">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9, y: 30 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  transition={{ duration: 0.9, delay: 0.2 }}
-                  style={{
-                    rotateX,
-                    rotateY,
-                    transformStyle: "preserve-3d",
-                    perspective: "1200px",
-                  }}
-                  onMouseMove={handleMouseMove}
-                  onMouseLeave={() => {
-                    x.set(0);
-                    y.set(0);
-                  }}
-                  className="group relative cursor-pointer"
-                >
-                  {/* ✅ vh-driven sizing so it shrinks on short screens */}
-                  <div className="relative mx-auto h-[clamp(12rem,36vh,24rem)] w-[clamp(12rem,36vh,24rem)]">
-                    <div className="absolute inset-0 rounded-[3.25rem] sm:rounded-[4rem] bg-gradient-to-b from-zinc-900 to-black border-[6px] border-zinc-800/70 overflow-hidden shadow-2xl ring-1 ring-white/5">
-                      <motion.div
-                        style={{ x: imgX, y: imgY }}
-                        className="relative h-full w-full scale-[1.1] will-change-transform"
-                      >
-                        <Image
-                          src="/profile1.jpg"
-                          alt="Radwan Ahmed"
-                          fill
-                          priority
-                          sizes="(max-width: 768px) 80vw, 24rem"
-                          className="object-cover grayscale-[0.5] opacity-85 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000 ease-out"
-                        />
-                      </motion.div>
-                    </div>
-                  </div>
-                  <div className="absolute inset-[-3rem] rounded-full bg-yellow-400/10 opacity-0 group-hover:opacity-30 blur-3xl transition-opacity duration-1000 pointer-events-none" />
-                </motion.div>
-
-                <motion.h1
-                  variants={containerVariants}
-                  initial="hidden"
-                  animate="visible"
-                  className="mt-6 sm:mt-8 select-none flex flex-col items-center 2xl:items-start uppercase italic font-black tracking-tighter leading-[0.85]"
-                >
-                  <motion.span
-                    variants={itemVariants}
-                    className="text-[clamp(2.6rem,5vw,6rem)]"
+        {/* Row 1 */}
+        <div className="flex-1 min-h-0 flex items-center justify-center px-5 2xl:px-10 pt-6 pb-4 2xl:pt-12 2xl:pb-10">
+          <div className="w-full max-w-2xl 2xl:max-w-4xl flex flex-col items-center text-center">
+            {/* 1) Portrait */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              style={{
+                rotateX,
+                rotateY,
+                transformStyle: "preserve-3d",
+                perspective: "1200px",
+              }}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={() => {
+                x.set(0);
+                y.set(0);
+              }}
+              className="group relative flex-shrink-0"
+            >
+              {/* ✅ ONLY this wrapper controls size */}
+              <div className="relative mx-auto h-[clamp(10rem,30vh,20rem)] w-[clamp(10rem,30vh,20rem)] 2xl:h-[clamp(16rem,34vh,28rem)] 2xl:w-[clamp(16rem,34vh,28rem)]">
+                <div className="absolute inset-0 rounded-[3rem] sm:rounded-[3.5rem] 2xl:rounded-full bg-gradient-to-b from-zinc-900 to-black border-[5px] 2xl:border-[6px] border-zinc-800/70 overflow-hidden shadow-2xl ring-1 ring-white/5">
+                  <motion.div
+                    style={{ x: imgX, y: imgY }}
+                    className="relative h-full w-full scale-[1.1] will-change-transform"
                   >
-                    Radwan
-                  </motion.span>
-                  <motion.span
-                    variants={itemVariants}
-                    className="text-[clamp(2.6rem,5vw,6rem)] text-zinc-600/90"
-                  >
-                    Ahmed
-                  </motion.span>
-                </motion.h1>
-
-                <motion.div
-                  variants={containerVariants}
-                  initial="hidden"
-                  animate="visible"
-                  className="mt-5 sm:mt-6 flex flex-wrap justify-center 2xl:justify-start gap-4 px-4 py-3 bg-zinc-900/50 backdrop-blur-lg rounded-3xl border border-white/5 shadow-xl"
-                >
-                  <NavIcon
-                    href="https://github.com/cattleherd"
-                    label="GitHub"
-                    color="bg-zinc-800"
-                    icon={Github}
-                  />
-                  <NavIcon
-                    href="https://www.linkedin.com/in/radwan-ahmed-to/"
-                    label="LinkedIn"
-                    color="bg-[#0077B5]/90"
-                    icon={Linkedin}
-                  />
-                </motion.div>
+                    <Image
+                      src="/profile1.jpg"
+                      alt="Radwan Ahmed"
+                      fill
+                      priority
+                      className="object-cover grayscale-[0.5] opacity-90 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000"
+                    />
+                  </motion.div>
+                </div>
               </div>
-            </div>
+
+              <div className="absolute inset-[-2rem] 2xl:inset-[-3rem] rounded-full bg-yellow-400/5 opacity-0 group-hover:opacity-20 blur-3xl transition-opacity duration-1000 pointer-events-none" />
+            </motion.div>
+
+            {/* 2) Name */}
+            <motion.h1
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="mt-6 2xl:mt-10 select-none flex flex-col items-center uppercase italic font-black tracking-tighter leading-[0.85]"
+            >
+              <motion.span
+                variants={itemVariants}
+                className="text-[clamp(2.4rem,6vh,5rem)] 2xl:text-[clamp(3.4rem,6.2vh,6.4rem)]"
+              >
+                Radwan
+              </motion.span>
+              <motion.span
+                variants={itemVariants}
+                className="text-[clamp(2.4rem,6vh,5rem)] 2xl:text-[clamp(3.4rem,6.2vh,6.4rem)] text-zinc-600/90"
+              >
+                Ahmed
+              </motion.span>
+            </motion.h1>
+
+            {/* 3) Bio */}
+            <motion.div
+              variants={itemVariants}
+              initial="hidden"
+              animate="visible"
+              className="mt-6 2xl:mt-8 max-w-md 2xl:max-w-2xl px-4 2xl:px-0"
+            >
+              <p className="text-[clamp(0.95rem,2.1vh,1.15rem)] 2xl:text-[clamp(1.25rem,1.65vh,1.65rem)] leading-relaxed 2xl:leading-snug text-zinc-400 font-medium">
+                Software Engineer <span className="text-zinc-600 mx-1">•</span>{" "}
+                UX + Motion
+                <br className="hidden sm:block" />
+                Building tactile digital experiences in Toronto.
+              </p>
+            </motion.div>
+
+            {/* 4) Social */}
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="mt-6 2xl:mt-9 flex flex-wrap justify-center gap-3 2xl:gap-4 px-4 2xl:px-6 py-2.5 2xl:py-4 bg-zinc-900/40 backdrop-blur-md rounded-2xl 2xl:rounded-3xl border border-white/5 shadow-xl transform 2xl:scale-[1.06]"
+            >
+              <NavIcon
+                href="https://github.com/cattleherd"
+                label="GitHub"
+                color="bg-zinc-800"
+                icon={Github}
+              />
+              <NavIcon
+                href="https://www.linkedin.com/in/radwan-ahmed-to/"
+                label="LinkedIn"
+                color="bg-[#0077B5]/90"
+                icon={Linkedin}
+              />
+            </motion.div>
           </div>
         </div>
 
-        {/* Row 2: Scroll button (always visible on small screens) */}
-        {!isExpanded && (
-          <div className="2xl:hidden mt-auto flex justify-center pt-4">
-            <motion.button
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 0.85, y: 0 }}
-              whileHover={{ opacity: 1, scale: 1.05 }}
-              transition={{ delay: 1.0, duration: 0.5 }}
-              onClick={scrollToBio}
-              className="flex items-center gap-2 px-6 py-3 rounded-full bg-zinc-900/60 backdrop-blur border border-white/10 text-sm font-medium text-zinc-300 hover:text-white hover:border-white/30 transition-all"
-            >
+        {/* Row 2 */}
+        <div className="w-full flex justify-center pb-6 flex-shrink-0 2xl:hidden">
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5 }}
+            onClick={scrollToBio}
+            className="flex flex-col items-center gap-2 group cursor-pointer"
+          >
+            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-500 group-hover:text-zinc-300 transition-colors">
+              Full Bio
+            </span>
+            <div className="h-10 w-10 rounded-full border border-white/10 flex items-center justify-center bg-zinc-900/50 backdrop-blur group-hover:border-white/30 transition-all">
               <motion.div
-                animate={{ y: [0, 6, 0] }}
-                transition={{
-                  repeat: Infinity,
-                  duration: 1.8,
-                  ease: "easeInOut",
-                }}
+                animate={{ y: [0, 4, 0] }}
+                transition={{ repeat: Infinity, duration: 2 }}
               >
-                <ChevronDown size={20} />
+                <ChevronDown
+                  size={18}
+                  className="text-zinc-500 group-hover:text-white"
+                />
               </motion.div>
-            </motion.button>
-          </div>
-        )}
+            </div>
+          </motion.button>
+        </div>
       </section>
-      {/* Mobile Bio Section */}
+      {/* Bio Section */}
       <section
         id="bio"
-        className="relative z-30 2xl:hidden px-4 sm:px-8 pb-20 pt-10 sm:pt-14 scroll-mt-6"
+        className="relative z-30 px-4 sm:px-8 2xl:px-10 pb-20 2xl:pb-28 pt-10 sm:pt-14 scroll-mt-6 " 
       >
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-3xl 2xl:max-w-5xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="rounded-3xl border border-white/8 bg-zinc-950/70 backdrop-blur-xl p-5 sm:p-10 shadow-2xl"
+            className="rounded-3xl 2xl:rounded-[2.5rem] border border-white/8 bg-zinc-950/70 backdrop-blur-xl p-5 sm:p-10 2xl:p-14 shadow-2xl"
           >
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-6">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-6 2xl:gap-10">
               <div>
-                <p className="text-[10px] sm:text-xs font-black uppercase tracking-[0.45em] text-zinc-500">
+                <p className="text-[10px] sm:text-xs 2xl:text-sm font-black uppercase tracking-[0.45em] text-zinc-500">
                   Bio
                 </p>
 
-                {/* ✅ smaller on mobile, bigger on larger screens */}
-                <h2 className="mt-2 sm:mt-3 text-[clamp(1.6rem,6vw,2.1rem)] font-black tracking-tight text-white">
+                <h2 className="mt-2 sm:mt-3 2xl:mt-5 text-[clamp(1.6rem,6vw,2.1rem)] 2xl:text-[clamp(2.2rem,2.4vw,3.1rem)] font-black tracking-tight text-white">
                   Radwan Ahmed
                 </h2>
 
-                {/* ✅ tighten + scale down on tiny screens */}
-                <p className="mt-2 text-[13px] sm:text-[16px] text-zinc-300/90 leading-snug">
+                <p className="mt-2 2xl:mt-4 text-[13px] sm:text-[16px] 2xl:text-[19px] text-zinc-300/90 leading-snug 2xl:leading-snug">
                   Software Engineer • Frontend (React / React Native) • UX +
                   Motion
                 </p>
               </div>
             </div>
 
-            <p className="mt-5 sm:mt-8 text-[0.9em] sm:text-[1em] leading-relaxed text-zinc-300/90">
+            <p className="mt-5 sm:mt-8 2xl:mt-10 text-[0.9em] sm:text-[1em] 2xl:text-[1.12em] leading-relaxed 2xl:leading-relaxed text-zinc-300/90">
               I’m a 4th-year Computer Science student at Thompson Rivers
               University, based in Toronto. I build fast, accessible interfaces
               and product experiences — mainly in React and React Native — then
@@ -394,12 +405,12 @@ export default function Portfolio() {
               intentional, tactile, and never “template-y.”
             </p>
 
-            <div className="mt-6 sm:mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-              <div className="rounded-2xl bg-zinc-900/40 border border-white/10 p-5 sm:p-2">
-                <p className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-zinc-400">
+            <div className="mt-6 sm:mt-10 2xl:mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 2xl:gap-8">
+              <div className="rounded-2xl 2xl:rounded-3xl bg-zinc-900/40 border border-white/10 p-5 sm:p-6 2xl:p-8">
+                <p className="text-[10px] sm:text-xs 2xl:text-sm font-black uppercase tracking-wider text-zinc-400">
                   Stack
                 </p>
-                <p className="mt-2 text-[13px]  sm:text-[14px] text-zinc-200 leading-relaxed">
+                <p className="mt-2 2xl:mt-3 text-[13px] sm:text-[14px] 2xl:text-[16px] text-zinc-200 leading-relaxed">
                   React • React Native • TypeScript • Node/Express • MongoDB •
                   Figma • Rive • Framer Motion
                 </p>
@@ -408,6 +419,7 @@ export default function Portfolio() {
           </motion.div>
         </div>
       </section>
+
       {/* Floating Afkaa Mascot */}
       <div className="fixed top-5 right-5 sm:top-8 sm:right-8 z-[110]">
         <AnimatePresence>
