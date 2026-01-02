@@ -28,6 +28,7 @@ export default function Portfolio() {
   const [isExpanded, setIsExpanded] = useState(false);
   const mascotRef = useRef<HTMLDivElement | null>(null);
   const [portalCenter, setPortalCenter] = useState({ x: 0, y: 0 });
+  const [showScrollCue, setShowScrollCue] = useState(true);
 
   const recenterPortal = () => {
     if (!mascotRef.current) return;
@@ -81,6 +82,7 @@ export default function Portfolio() {
   };
 
   const scrollToBio = () => {
+    setShowScrollCue(true);
     document
       .getElementById("bio")
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -103,6 +105,25 @@ export default function Portfolio() {
       transition: { type: "spring", stiffness: 100, damping: 14 },
     },
   };
+
+  useEffect(() => {
+    const HIDE_AT = 120;
+    const SHOW_AT = 100; 
+
+    const onScroll = () => {
+      const y = window.scrollY;
+
+      setShowScrollCue((prev) => {
+        if (prev && y > HIDE_AT) return false; 
+        if (!prev && y < SHOW_AT) return true; 
+        return prev;
+      });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <main className="relative min-h-screen w-full overflow-x-hidden bg-[#060607] font-sans text-zinc-100 selection:bg-yellow-500/30 text-[15px] sm:text-[16px] 2xl:text-[18px]">
@@ -343,32 +364,38 @@ export default function Portfolio() {
         </div>
 
         {/* Row 2 */}
-        <div className="w-full flex justify-center pb-6 flex-shrink-0  2xl:hidden">
-          <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5 }}
-            onClick={scrollToBio}
-            className="flex flex-col items-center gap-2 group cursor-pointer"
-          >
-            <div className="h-10 w-10 lg:size-15 rounded-full border border-white/10 flex items-center justify-center bg-zinc-900/50 backdrop-blur group-hover:border-white/30 transition-all">
-              <motion.div
-                animate={{ y: [0, 4, 0] }}
-                transition={{ repeat: Infinity, duration: 2 }}
+        <div className="w-full flex justify-center pb-6 flex-shrink-0 2xl:hidden">
+          <AnimatePresence>
+            {showScrollCue  && (
+              <motion.button
+                key="scroll-cue"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10, transition: { duration: 0.2 } }}
+                transition={{ delay: 1.5 }}
+                onClick={scrollToBio}
+                className="flex flex-col items-center gap-2 group cursor-pointer"
               >
-                <ChevronDown
-                  size={18}
-                  className="text-zinc-500 group-hover:text-white lg:size-8"
-                />
-              </motion.div>
-            </div>
-          </motion.button>
+                <div className="h-10 w-10 lg:size-15 rounded-full border border-white/10 flex items-center justify-center bg-zinc-900/50 backdrop-blur group-hover:border-white/30 transition-all">
+                  <motion.div
+                    animate={{ y: [0, 4, 0] }}
+                    transition={{ repeat: Infinity, duration: 2 }}
+                  >
+                    <ChevronDown
+                      size={18}
+                      className="text-zinc-500 group-hover:text-white lg:size-8"
+                    />
+                  </motion.div>
+                </div>
+              </motion.button>
+            )}
+          </AnimatePresence>
         </div>
       </section>
       {/* Bio Section */}
       <section
         id="bio"
-        className="relative z-30 px-4 sm:px-8 2xl:px-10 pb-20 2xl:pb-28 pt-10 sm:pt-14 scroll-mt-6 " 
+        className="relative z-30 px-4 sm:px-8 2xl:px-10 pb-20 2xl:pb-28 pt-10 sm:pt-14 scroll-mt-6 "
       >
         <div className="mx-auto max-w-3xl 2xl:max-w-5xl">
           <motion.div
