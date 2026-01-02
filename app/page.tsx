@@ -25,17 +25,10 @@ import Image from "next/image";
 
 export default function Portfolio() {
   const [showBubble, setShowBubble] = useState(false);
-
-  // whether Afkaa portal expanded or not
   const [isExpanded, setIsExpanded] = useState(false);
-
-  // ref for positioning of rive element
   const mascotRef = useRef<HTMLDivElement | null>(null);
-
-  // calculate center of the portal (for clipPath)
   const [portalCenter, setPortalCenter] = useState({ x: 0, y: 0 });
 
-  // helper fn to recenter portal
   const recenterPortal = () => {
     if (!mascotRef.current) return;
     const rect = mascotRef.current.getBoundingClientRect();
@@ -45,7 +38,6 @@ export default function Portfolio() {
     });
   };
 
-  // initialize + keep portal center accurate on resize
   useLayoutEffect(() => {
     const update = () => {
       if (!mascotRef.current) return;
@@ -61,20 +53,16 @@ export default function Portfolio() {
     return () => window.removeEventListener("resize", update);
   }, []);
 
-  // show the bubble 3 seconds after the page loads
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowBubble(true);
-    }, 3000);
+    const timer = setTimeout(() => setShowBubble(true), 3000);
     return () => clearTimeout(timer);
   }, []);
 
-  // automatically hide the bubble if the user expands the portal
   useEffect(() => {
     if (isExpanded) setShowBubble(false);
   }, [isExpanded]);
 
-  // mouse parallax state values
+  // Mouse parallax
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const mouseX = useSpring(x, { stiffness: 120, damping: 18 });
@@ -82,47 +70,43 @@ export default function Portfolio() {
 
   const rotateX = useTransform(mouseY, [-0.5, 0.5], [8, -8]);
   const rotateY = useTransform(mouseX, [-0.5, 0.5], [-8, 8]);
-  const imgX = useTransform(mouseX, [-0.5, 0.5], [14, -14]);
-  const imgY = useTransform(mouseY, [-0.5, 0.5], [14, -14]);
+  const imgX = useTransform(mouseX, [-0.5, 0.5], [12, -12]);
+  const imgY = useTransform(mouseY, [-0.5, 0.5], [12, -12]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isExpanded) return;
     const rect = e.currentTarget.getBoundingClientRect();
-    // normalized values for mouse movement -0.5 to 0.5
     x.set((e.clientX - rect.left) / rect.width - 0.5);
     y.set((e.clientY - rect.top) / rect.height - 0.5);
   };
 
-  // scroll to the bio section when user clicks the "scroll" button (only for <2xl)
   const scrollToBio = () => {
     document
       .getElementById("bio")
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  // animation values for parent container
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.1, delayChildren: 0.2 },
+      transition: { staggerChildren: 0.12, delayChildren: 0.25 },
     },
   };
 
-  // animation values for child elements
   const itemVariants: Variants = {
     hidden: { y: 24, opacity: 0, filter: "blur(8px)" },
     visible: {
       y: 0,
       opacity: 1,
       filter: "blur(0px)",
-      transition: { type: "spring", stiffness: 90, damping: 14 },
+      transition: { type: "spring", stiffness: 100, damping: 14 },
     },
   };
 
   return (
     <main className="relative min-h-screen w-full overflow-x-hidden bg-[#060607] font-sans text-zinc-100 selection:bg-yellow-500/30 text-[15px] sm:text-[16px] 2xl:text-[18px]">
-      {/* 1) THE YELLOW PORTAL LAYER */}
+      {/* Yellow Portal Overlay */}
       <motion.div
         initial={false}
         animate={{
@@ -141,11 +125,10 @@ export default function Portfolio() {
               initial="hidden"
               animate="visible"
               exit={{ opacity: 0 }}
-              className="relative z-10 mx-auto max-w-3xl px-6 sm:px-10 pt-24 pb-24 text-yellow-950"
+              className="relative z-10 mx-auto max-w-4xl px-6 sm:px-10 pt-24 pb-32 text-yellow-950"
             >
-              {/* Close Button */}
+              {/* Close button */}
               <button
-                type="button"
                 onClick={() => setIsExpanded(false)}
                 className="fixed top-6 left-6 sm:top-10 sm:left-10 p-4 bg-yellow-900/10 hover:bg-yellow-900/20 rounded-full transition-all hover:rotate-90 z-[70]"
                 aria-label="Close"
@@ -159,7 +142,7 @@ export default function Portfolio() {
                   <span className="h-px w-8 bg-yellow-950/30" />
                   Featured Project
                 </h2>
-                <h1 className="text-6xl sm:text-8xl md:text-9xl font-black uppercase italic tracking-tighter leading-[0.8] mb-8">
+                <h1 className="text-6xl sm:text-8xl md:text-9xl font-black uppercase italic tracking-tighter leading-[0.82] mb-6">
                   Afkaa
                 </h1>
                 <p className="text-2xl sm:text-3xl font-bold leading-tight tracking-tight max-w-2xl">
@@ -167,7 +150,7 @@ export default function Portfolio() {
                 </p>
               </motion.div>
 
-              {/* Core Features + Case Study + CTA */}
+              {/* Features + Case Study + CTA */}
               <motion.div variants={itemVariants} className="space-y-16">
                 <div className="space-y-6">
                   <h3 className="text-sm font-black uppercase tracking-widest border-b border-yellow-950/10 pb-2">
@@ -187,7 +170,7 @@ export default function Portfolio() {
                   </div>
                 </div>
 
-                <motion.div variants={itemVariants} className="space-y-6 pt-8">
+                <div className="space-y-6 pt-8">
                   <div className="flex items-center justify-between border-b border-yellow-950/10 pb-2">
                     <h3 className="text-sm font-black uppercase tracking-widest">
                       Full Case Study
@@ -196,7 +179,7 @@ export default function Portfolio() {
                       href="https://www.figma.com/deck/20e0kAnoIIITqTTVCdM87X/Untitled--Copy-?node-id=280-42"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[10px] font-bold uppercase tracking-tighter opacity-50 hover:opacity-100 transition-opacity flex items-center gap-1"
+                      className="text-[10px] font-bold uppercase tracking-tighter opacity-60 hover:opacity-100 transition-opacity flex items-center gap-1"
                     >
                       Open in Figma <ArrowUpRight size={12} />
                     </a>
@@ -214,7 +197,7 @@ export default function Portfolio() {
                     Use the arrows in the embed to navigate through the case
                     study.
                   </p>
-                </motion.div>
+                </div>
 
                 <div className="space-y-6">
                   <h3 className="text-sm font-black uppercase tracking-widest border-b border-yellow-950/10 pb-2">
@@ -225,8 +208,8 @@ export default function Portfolio() {
                       href="https://afkaa.com"
                       target="_blank"
                       rel="noopener noreferrer"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
                       className="flex items-center justify-center gap-3 px-8 py-4 bg-yellow-950 text-yellow-50 rounded-2xl font-black uppercase italic tracking-wider shadow-xl shadow-yellow-900/20"
                     >
                       Try the Demo <ExternalLink size={18} />
@@ -237,8 +220,8 @@ export default function Portfolio() {
                       target="_blank"
                       rel="noopener noreferrer"
                       whileHover={{
-                        scale: 1.02,
-                        backgroundColor: "rgba(120, 53, 15, 0.3)",
+                        scale: 1.03,
+                        backgroundColor: "rgba(120,53,15,0.3)",
                       }}
                       className="flex items-center justify-center gap-3 px-8 py-4 bg-yellow-900/10 text-yellow-950 border border-yellow-950/20 rounded-2xl font-black uppercase italic tracking-wider transition-colors"
                     >
@@ -252,25 +235,21 @@ export default function Portfolio() {
         </AnimatePresence>
       </motion.div>
 
-      {/* 3) HERO: <2xl single column, 2xl+ two columns */}
+      {/* Hero Section */}
+      {/* Hero Section (100svh container, nothing gets cut off) */}
       <section
-        className={[
-          "relative z-30 w-full px-5 sm:px-8",
-          // ✅ reserve space for the button row (prevents cut-off on short heights)
-          "min-h-[100svh] grid grid-rows-[1fr_auto]",
-          "pt-6 sm:pt-8 pb-4 sm:pb-6",
-          "transition-opacity duration-500",
-          isExpanded ? "opacity-0 pointer-events-none" : "opacity-100",
-        ].join(" ")}
+        className={`relative z-30 w-full h-[100svh] px-5 sm:px-8 pt-6 sm:pt-8 pb-6 flex flex-col transition-opacity duration-500 ${
+          isExpanded ? "opacity-0 pointer-events-none" : "opacity-100"
+        }`}
       >
-        {/* Row 1: hero content */}
-        <div className="min-h-0 flex items-center justify-center">
-          <div className="mx-auto w-full max-w-7xl">
-            <div className="grid items-center gap-10 2xl:grid-cols-[minmax(0,1fr)_520px]">
-              {/* LEFT: HERO CONTENT */}
-              <div className="w-full flex flex-col items-center text-center 2xl:items-start 2xl:text-left">
+        {/* Row 1: Main content (min-h-0 allows shrinking inside 100svh) */}
+        <div className="flex-1 min-h-0 flex items-center justify-center">
+          <div className="w-full max-w-7xl min-h-0">
+            <div className="grid gap-8 lg:gap-12 2xl:grid-cols-[1.1fr_1fr] 2xl:items-center min-h-0">
+              {/* Left - Portrait + Name + Links (+ compact bio preview on small screens) */}
+              <div className="flex flex-col items-center text-center 2xl:items-start 2xl:text-left min-h-0">
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.88, y: 30 }}
+                  initial={{ opacity: 0, scale: 0.9, y: 30 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   transition={{ duration: 0.9, delay: 0.2 }}
                   style={{
@@ -286,40 +265,42 @@ export default function Portfolio() {
                   }}
                   className="group relative cursor-pointer"
                 >
-                  <div className="relative mx-auto 2xl:mx-0 h-[16rem] w-[16rem] sm:h-[18rem] sm:w-[18rem] md:h-[15rem] md:w-[15rem] lg:h-[19rem] lg:w-[19rem] xl:h-[20rem] xl:w-[20rem] 2xl:h-[22rem] 2xl:w-[22rem]">
-                    <div className="absolute inset-0 rounded-[3.4rem] sm:rounded-[4.1rem] bg-gradient-to-b from-zinc-900 to-black border-[5px] border-zinc-800/80 overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.7),inset_0_0_40px_rgba(0,0,0,0.6)] ring-1 ring-white/5">
+                  {/* ✅ vh-driven sizing so it shrinks on short screens */}
+                  <div className="relative mx-auto h-[clamp(12rem,36vh,24rem)] w-[clamp(12rem,36vh,24rem)]">
+                    <div className="absolute inset-0 rounded-[3.25rem] sm:rounded-[4rem] bg-gradient-to-b from-zinc-900 to-black border-[6px] border-zinc-800/70 overflow-hidden shadow-2xl ring-1 ring-white/5">
                       <motion.div
                         style={{ x: imgX, y: imgY }}
-                        className="relative h-full w-full scale-[1.12] will-change-transform"
+                        className="relative h-full w-full scale-[1.1] will-change-transform"
                       >
                         <Image
                           src="/profile1.jpg"
                           alt="Radwan Ahmed"
                           fill
                           priority
-                          sizes="(max-width: 768px) 80vw, (max-width: 1536px) 20rem, 22rem"
-                          className="object-cover grayscale-[0.55] opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000 ease-out"
+                          sizes="(max-width: 768px) 80vw, 24rem"
+                          className="object-cover grayscale-[0.5] opacity-85 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000 ease-out"
                         />
                       </motion.div>
                     </div>
                   </div>
-                  <div className="absolute inset-[-2rem] rounded-full bg-yellow-400/10 opacity-0 group-hover:opacity-30 blur-3xl transition-opacity duration-1000 pointer-events-none" />
+                  <div className="absolute inset-[-3rem] rounded-full bg-yellow-400/10 opacity-0 group-hover:opacity-30 blur-3xl transition-opacity duration-1000 pointer-events-none" />
                 </motion.div>
+
                 <motion.h1
                   variants={containerVariants}
                   initial="hidden"
                   animate="visible"
-                  className="mt-6 select-none flex flex-col items-center 2xl:items-start uppercase italic font-black tracking-tighter leading-[0.88]"
+                  className="mt-6 sm:mt-8 select-none flex flex-col items-center 2xl:items-start uppercase italic font-black tracking-tighter leading-[0.85]"
                 >
                   <motion.span
                     variants={itemVariants}
-                    className="text-[clamp(2.8rem,4vw,5.2rem)]"
+                    className="text-[clamp(2.6rem,5vw,6rem)]"
                   >
                     Radwan
                   </motion.span>
                   <motion.span
                     variants={itemVariants}
-                    className="text-[clamp(2.8rem,4vw,5.2rem)] text-zinc-600/90"
+                    className="text-[clamp(2.6rem,5vw,6rem)] text-zinc-600/90"
                   >
                     Ahmed
                   </motion.span>
@@ -329,7 +310,7 @@ export default function Portfolio() {
                   variants={containerVariants}
                   initial="hidden"
                   animate="visible"
-                  className="mt-6 sm:mt-7 flex flex-wrap justify-center 2xl:justify-start gap-4 px-4 py-3 bg-zinc-900/50 backdrop-blur-lg rounded-3xl border border-white/5 shadow-xl"
+                  className="mt-5 sm:mt-6 flex flex-wrap justify-center 2xl:justify-start gap-4 px-4 py-3 bg-zinc-900/50 backdrop-blur-lg rounded-3xl border border-white/5 shadow-xl"
                 >
                   <NavIcon
                     href="https://github.com/cattleherd"
@@ -345,171 +326,119 @@ export default function Portfolio() {
                   />
                 </motion.div>
               </div>
-
-              {/* RIGHT: BIO (2xl+) */}
-              <div className="hidden 2xl:block">
-                <div className="rounded-3xl border border-white/8 bg-zinc-950/65 backdrop-blur-xl p-7 shadow-2xl">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="text-xs font-black uppercase tracking-[0.4em] text-zinc-500">
-                        Bio
-                      </p>
-                      <h2 className="mt-2 text-2xl font-black tracking-tight text-white">
-                        Radwan Ahmed
-                      </h2>
-                      <p className="mt-1 text-sm text-zinc-300/80">
-                        Software Engineer • Frontend (React/React Native) • UX +
-                        Motion
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-5 max-h-[55svh] overflow-y-auto pr-2">
-                    <p className="text-[clamp(1rem,0.9vw,1.2rem)] leading-relaxed text-zinc-300/90">
-                      I’m a 4th-year Computer Science student at Thompson Rivers
-                      University, based in Toronto. I build
-                      fast, accessible interfaces and product experiences—mainly
-                      in React and React Native—then polish them with strong UX
-                      and motion so they feel intentional, not “template-y.”
-                    </p>
-
-                    <div className="mt-6 grid grid-cols-1 gap-4">
-                      <div className="rounded-2xl bg-zinc-900/40 border border-white/10 p-5">
-                        <p className="text-xs font-black uppercase tracking-wider text-zinc-400">
-                          Stack
-                        </p>
-                        <p className="mt-2 text-sm text-zinc-200">
-                          React • React Native • JavaScript • Node/Express •
-                          MongoDB • Figma • Rive
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
 
-        {/* Row 2: scroll button */}
+        {/* Row 2: Scroll button (always visible on small screens) */}
         {!isExpanded && (
-          <div className="2xl:hidden flex justify-center pt-2 sm:pt-4 [@media(max-height:650px)]:hidden">
+          <div className="2xl:hidden mt-auto flex justify-center pt-4">
             <motion.button
-              type="button"
               initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 0.8, y: 0 }}
-              whileHover={{ opacity: 1, scale: 1.04 }}
-              transition={{ delay: 1.2, duration: 0.55 }}
+              animate={{ opacity: 0.85, y: 0 }}
+              whileHover={{ opacity: 1, scale: 1.05 }}
+              transition={{ delay: 1.0, duration: 0.5 }}
               onClick={scrollToBio}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-900/60 backdrop-blur border border-white/10 text-sm font-medium text-zinc-300 hover:text-white hover:border-white/30 transition-all"
+              className="flex items-center gap-2 px-6 py-3 rounded-full bg-zinc-900/60 backdrop-blur border border-white/10 text-sm font-medium text-zinc-300 hover:text-white hover:border-white/30 transition-all"
             >
               <motion.div
                 animate={{ y: [0, 6, 0] }}
                 transition={{
                   repeat: Infinity,
-                  duration: 1.6,
+                  duration: 1.8,
                   ease: "easeInOut",
                 }}
               >
-                <ChevronDown size={18} />
+                <ChevronDown size={20} />
               </motion.div>
             </motion.button>
           </div>
         )}
       </section>
-
-      {/* 4) BIO SECTION (for <2xl only) */}
+      {/* Mobile Bio Section */}
       <section
         id="bio"
-        className="relative z-30 2xl:hidden px-5 sm:px-8 pb-24 pt-10 sm:pt-14"
+        className="relative z-30 2xl:hidden px-4 sm:px-8 pb-20 pt-10 sm:pt-14 scroll-mt-6"
       >
         <div className="mx-auto max-w-3xl">
-          <div className="rounded-3xl border border-white/8 bg-zinc-950/65 backdrop-blur-xl p-6 sm:p-9 shadow-2xl">
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-5">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="rounded-3xl border border-white/8 bg-zinc-950/70 backdrop-blur-xl p-5 sm:p-10 shadow-2xl"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-6">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.4em] text-zinc-500">
+                <p className="text-[10px] sm:text-xs font-black uppercase tracking-[0.45em] text-zinc-500">
                   Bio
                 </p>
-                <h2 className="mt-2 text-2xl sm:text-3xl font-black tracking-tight text-white">
+
+                {/* ✅ smaller on mobile, bigger on larger screens */}
+                <h2 className="mt-2 sm:mt-3 text-[clamp(1.6rem,6vw,2.1rem)] font-black tracking-tight text-white">
                   Radwan Ahmed
                 </h2>
-                <p className="mt-1 text-sm sm:text-base text-zinc-300/80">
-                  Software Engineer • Frontend (React/React Native) • UX +
+
+                {/* ✅ tighten + scale down on tiny screens */}
+                <p className="mt-2 text-[13px] sm:text-[16px] text-zinc-300/90 leading-snug">
+                  Software Engineer • Frontend (React / React Native) • UX +
                   Motion
                 </p>
               </div>
             </div>
 
-            <p className="mt-6 text-base sm:text-lg leading-relaxed text-zinc-300/90">
+            <p className="mt-5 sm:mt-8 text-[0.9em] sm:text-[1em] leading-relaxed text-zinc-300/90">
               I’m a 4th-year Computer Science student at Thompson Rivers
-              University. I build fast, accessible interfaces
-              and product experiences—mainly in React and React Native—and use
-              strong UX + motion to make them feel intentional and polished.
+              University, based in Toronto. I build fast, accessible interfaces
+              and product experiences — mainly in React and React Native — then
+              polish them with strong UX and motion design so they feel
+              intentional, tactile, and never “template-y.”
             </p>
 
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="rounded-2xl bg-zinc-900/40 border border-white/10 p-5">
-                <p className="text-xs font-black uppercase tracking-wider text-zinc-400">
+            <div className="mt-6 sm:mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+              <div className="rounded-2xl bg-zinc-900/40 border border-white/10 p-5 sm:p-2">
+                <p className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-zinc-400">
                   Stack
                 </p>
-                <p className="mt-2 text-sm text-zinc-200">
-                  React • React Native • JavaScript • Node/Express • MongoDB •
-                  Figma • Rive
+                <p className="mt-2 text-[13px]  sm:text-[14px] text-zinc-200 leading-relaxed">
+                  React • React Native • TypeScript • Node/Express • MongoDB •
+                  Figma • Rive • Framer Motion
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
-
-      {/* 5) FLOATING AFKAA MASCOT WITH CHAT BUBBLE */}
+      {/* Floating Afkaa Mascot */}
       <div className="fixed top-5 right-5 sm:top-8 sm:right-8 z-[110]">
         <AnimatePresence>
           {showBubble && !isExpanded && (
             <motion.div
-              initial={{ opacity: 0, y: 10, scale: 0.5, x: "-50%" }}
-              animate={
-                showBubble && !isExpanded
-                  ? {
-                      opacity: 1,
-                      y: [0, -6, 0],
-                      scale: 1,
-                      x: "-50%",
-                      transition: {
-                        opacity: { duration: 0.4 },
-                        scale: { duration: 0.4 },
-                        y: {
-                          repeat: Infinity,
-                          duration: 2.2,
-                          ease: "easeInOut",
-                        },
-                      },
-                    }
-                  : { opacity: 0, scale: 0.6 }
-              }
-              exit={{
-                opacity: 0,
-                scale: 0.5,
+              initial={{ opacity: 0, y: 10, scale: 0.6, x: "-50%" }}
+              animate={{
+                opacity: 1,
+                y: [0, -6, 0],
+                scale: 1,
                 x: "-50%",
-                transition: { duration: 0.25 },
+                transition: {
+                  opacity: { duration: 0.4 },
+                  scale: { duration: 0.4 },
+                  y: { repeat: Infinity, duration: 2.2, ease: "easeInOut" },
+                },
               }}
-              className="absolute left-1/2 -top-2 w-auto min-w-[90px] -translate-x-1/2 
-             bg-zinc-900 text-white px-2 py-2.5 rounded-2xl 
-    shadow-2xl shadow-black/60 backdrop-blur-sm
-    border border-white/10
-             pointer-events-none z-[120]"
+              exit={{ opacity: 0, scale: 0.6, transition: { duration: 0.25 } }}
+              className="absolute left-1/2 -top-3 w-auto min-w-[100px] -translate-x-1/2 bg-zinc-900 text-white px-3 py-3 rounded-2xl shadow-2xl shadow-black/60 backdrop-blur-sm border border-white/10 pointer-events-none z-[120]"
             >
               <p className="text-[13px] font-black uppercase italic tracking-tight whitespace-nowrap">
                 Click me!
               </p>
-
-              {/* Bubble tail */}
               <div className="absolute -bottom-1.5 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 bg-zinc-900" />
             </motion.div>
           )}
         </AnimatePresence>
+
         <motion.div
           ref={mascotRef}
-          onAnimationComplete={() => recenterPortal()}
+          onAnimationComplete={recenterPortal}
           initial={{ opacity: 0, scale: 0.6, x: 30 }}
           animate={{ opacity: 1, scale: 1, x: 0 }}
           transition={{
@@ -526,8 +455,9 @@ export default function Portfolio() {
           </div>
         </motion.div>
       </div>
+
       {/* Footer */}
-      <footer className="relative z-30 border-t border-white/10 px-5 sm:px-8 py-10 text-center text-xs sm:text-sm text-zinc-500">
+      <footer className="relative z-30 border-t border-white/10 px-5 sm:px-8 py-12 text-center text-sm text-zinc-500">
         <div className="mx-auto max-w-7xl">
           <p className="tracking-wide">
             © {new Date().getFullYear()} Radwan Ahmed
@@ -538,7 +468,7 @@ export default function Portfolio() {
   );
 }
 
-/* ---------------- Helper Components ---------------- */
+/* ── Helper Components ── */
 
 function FeatureItem({
   icon: Icon,
@@ -551,16 +481,17 @@ function FeatureItem({
 }) {
   return (
     <div className="flex gap-4">
-      <div className="shrink-0 h-10 w-10 bg-yellow-950/5 flex items-center justify-center rounded-xl border border-yellow-950/10">
-        <Icon size={20} strokeWidth={2.5} />
+      <div className="shrink-0 h-11 w-11 bg-yellow-950/10 flex items-center justify-center rounded-xl border border-yellow-950/20">
+        <Icon size={22} strokeWidth={2.3} />
       </div>
       <div>
-        <h4 className="font-black italic uppercase text-sm">{title}</h4>
-        <p className="text-sm opacity-80 leading-snug">{desc}</p>
+        <h4 className="font-black italic uppercase text-base">{title}</h4>
+        <p className="text-sm opacity-85 leading-snug mt-1">{desc}</p>
       </div>
     </div>
   );
 }
+
 function NavIcon({
   label,
   color,
@@ -583,17 +514,17 @@ function NavIcon({
       target="_blank"
       rel="noopener noreferrer"
       variants={variants}
-      whileHover={{ y: -6, scale: 1.1 }}
-      whileTap={{ scale: 0.92 }}
-      className="flex flex-col items-center gap-1.5 group"
+      whileHover={{ y: -6, scale: 1.12 }}
+      whileTap={{ scale: 0.9 }}
+      className="flex flex-col items-center gap-2 group"
       aria-label={label}
     >
       <div
-        className={`h-11 w-11 sm:h-12 sm:w-12 ${color} rounded-xl shadow-md flex items-center justify-center transition-all group-hover:rotate-3`}
+        className={`h-12 w-12 sm:h-13 sm:w-13 ${color} rounded-xl shadow-lg flex items-center justify-center transition-all group-hover:rotate-6`}
       >
-        <Icon size={20} className="text-white" strokeWidth={2.4} />
+        <Icon size={22} className="text-white" strokeWidth={2.4} />
       </div>
-      <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-zinc-400 group-hover:text-zinc-200">
+      <span className="text-xs font-bold uppercase tracking-wider text-zinc-400 group-hover:text-zinc-200 transition-colors">
         {label}
       </span>
     </motion.a>
