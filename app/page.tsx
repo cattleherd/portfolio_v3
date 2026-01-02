@@ -343,7 +343,7 @@ export default function Portfolio() {
         </div>
 
         {/* Row 2 */}
-        <div className="w-full flex justify-center pb-6 flex-shrink-0 2xl:hidden">
+        <div className="w-full flex justify-center pb-6 flex-shrink-0  2xl:hidden">
           <motion.button
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -351,17 +351,14 @@ export default function Portfolio() {
             onClick={scrollToBio}
             className="flex flex-col items-center gap-2 group cursor-pointer"
           >
-            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-500 group-hover:text-zinc-300 transition-colors">
-              Full Bio
-            </span>
-            <div className="h-10 w-10 rounded-full border border-white/10 flex items-center justify-center bg-zinc-900/50 backdrop-blur group-hover:border-white/30 transition-all">
+            <div className="h-10 w-10 lg:size-15 rounded-full border border-white/10 flex items-center justify-center bg-zinc-900/50 backdrop-blur group-hover:border-white/30 transition-all">
               <motion.div
                 animate={{ y: [0, 4, 0] }}
                 transition={{ repeat: Infinity, duration: 2 }}
               >
                 <ChevronDown
                   size={18}
-                  className="text-zinc-500 group-hover:text-white"
+                  className="text-zinc-500 group-hover:text-white lg:size-8"
                 />
               </motion.div>
             </div>
