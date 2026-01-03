@@ -30,6 +30,7 @@ export default function Portfolio() {
   const [portalCenter, setPortalCenter] = useState({ x: 0, y: 0 });
   const [showScrollCue, setShowScrollCue] = useState(true);
 
+  // helper fn to center the yellow portal center behind the avatar
   const recenterPortal = () => {
     if (!mascotRef.current) return;
     const rect = mascotRef.current.getBoundingClientRect();
@@ -39,6 +40,7 @@ export default function Portfolio() {
     });
   };
 
+  // initial centering of the portal based on avatar position
   useLayoutEffect(() => {
     const update = () => {
       if (!mascotRef.current) return;
@@ -54,33 +56,59 @@ export default function Portfolio() {
     return () => window.removeEventListener("resize", update);
   }, []);
 
+  // avatar "click me" bubble
   useEffect(() => {
     const timer = setTimeout(() => setShowBubble(true), 3000);
     return () => clearTimeout(timer);
   }, []);
 
+  // remove avatar "click me" button when portal expands
   useEffect(() => {
     if (isExpanded) setShowBubble(false);
   }, [isExpanded]);
 
-  // Mouse parallax
+  // ─────────────────────────────────────────────
+  // Mouse parallax logic
+  // Tracks cursor position and converts it into
+  // subtle 3D tilt + image offset for depth
+  // ─────────────────────────────────────────────
+
+  // Raw motion values (instant, unsmoothed cursor offsets)
   const x = useMotionValue(0);
   const y = useMotionValue(0);
+
+  // Spring-smoothed versions of x/y
+  // Prevents jitter and gives the movement inertia
   const mouseX = useSpring(x, { stiffness: 120, damping: 18 });
   const mouseY = useSpring(y, { stiffness: 120, damping: 18 });
 
+  // Map vertical mouse movement for X-axis rotation (tilt up/down)
+  // Cursor up tilts the card back, cursor down tilts it forward (top is -0.5, center 0, bottom 0.5)
   const rotateX = useTransform(mouseY, [-0.5, 0.5], [8, -8]);
+
+  // Map horizontal mouse movement for Y-axis rotation (tilt left/right)
+  // Cursor left tilts right, cursor right tilts left
   const rotateY = useTransform(mouseX, [-0.5, 0.5], [-8, 8]);
+
+  // Subtle parallax translation for the inner image (X axis)
+  // Image moves opposite the cursor to enhance depth
   const imgX = useTransform(mouseX, [-0.5, 0.5], [12, -12]);
+
+  // Subtle parallax translation for the inner image (Y axis)
+  // Image moves opposite the cursor to enhance depth
   const imgY = useTransform(mouseY, [-0.5, 0.5], [12, -12]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (isExpanded) return;
-    const rect = e.currentTarget.getBoundingClientRect();
+    if (isExpanded) return; // if portal expands, then no need to track mouse parallax
+    const rect = e.currentTarget.getBoundingClientRect(); // get position and size of image
+    // normalize the image parallax values
+    // clientX is distance from left edge of entire viewport
+    // rect.left is distance from left edge of the element (image) to the left of viewport
     x.set((e.clientX - rect.left) / rect.width - 0.5);
     y.set((e.clientY - rect.top) / rect.height - 0.5);
   };
 
+  // scroll the page to bio element
   const scrollToBio = () => {
     setShowScrollCue(true);
     document
@@ -88,6 +116,7 @@ export default function Portfolio() {
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  // animation values
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -96,6 +125,7 @@ export default function Portfolio() {
     },
   };
 
+  // animation values, item variants animate into view in staggered fashion
   const itemVariants: Variants = {
     hidden: { y: 24, opacity: 0, filter: "blur(8px)" },
     visible: {
@@ -106,16 +136,17 @@ export default function Portfolio() {
     },
   };
 
+  // when to show "scroll to bio" button
   useEffect(() => {
     const HIDE_AT = 120;
-    const SHOW_AT = 100; 
+    const SHOW_AT = 100;
 
     const onScroll = () => {
       const y = window.scrollY;
 
       setShowScrollCue((prev) => {
-        if (prev && y > HIDE_AT) return false; 
-        if (!prev && y < SHOW_AT) return true; 
+        if (prev && y > HIDE_AT) return false;
+        if (!prev && y < SHOW_AT) return true;
         return prev;
       });
     };
@@ -163,20 +194,42 @@ export default function Portfolio() {
                   <span className="h-px w-8 bg-yellow-950/30" />
                   Featured Project
                 </h2>
+
                 <h1 className="text-6xl sm:text-8xl md:text-9xl font-black uppercase italic tracking-tighter leading-[0.82] mb-6">
                   Afkaa
                 </h1>
+
                 <p className="text-2xl sm:text-3xl font-bold leading-tight tracking-tight max-w-2xl">
                   A fun, gamified app that makes learning Somali feel like play.
                 </p>
               </motion.div>
 
+              {/* Demo Reel */}
+              <motion.div variants={itemVariants} className="mb-16">
+                <div className="relative w-full aspect-video rounded-3xl overflow-hidden bg-yellow-900/5 border border-yellow-950/10 shadow-inner">
+                  <video
+                    src="/reel.mp4"
+                    poster="/reel-poster.jpg"
+                    controls
+                    playsInline
+                    preload="metadata"
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                </div>
+
+                <p className="mt-3 text-xs font-medium opacity-60 italic text-center">
+                  Motion + interaction reel (30s)
+                </p>
+              </motion.div>
+
               {/* Features + Case Study + CTA */}
               <motion.div variants={itemVariants} className="space-y-16">
+                {/* Core Features */}
                 <div className="space-y-6">
                   <h3 className="text-sm font-black uppercase tracking-widest border-b border-yellow-950/10 pb-2">
                     Core Features
                   </h3>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <FeatureItem
                       icon={Gamepad2}
@@ -191,11 +244,13 @@ export default function Portfolio() {
                   </div>
                 </div>
 
+                {/* Case Study */}
                 <div className="space-y-6 pt-8">
                   <div className="flex items-center justify-between border-b border-yellow-950/10 pb-2">
                     <h3 className="text-sm font-black uppercase tracking-widest">
                       Full Case Study
                     </h3>
+
                     <a
                       href="https://www.figma.com/deck/20e0kAnoIIITqTTVCdM87X/Untitled--Copy-?node-id=280-42"
                       target="_blank"
@@ -206,7 +261,7 @@ export default function Portfolio() {
                     </a>
                   </div>
 
-                  <div className="relative w-full aspect-video rounded-3xl overflow-hidden bg-yellow-900/5 border border-yellow-950/10 shadow-inner group">
+                  <div className="relative w-full aspect-video rounded-3xl overflow-hidden bg-yellow-900/5 border border-yellow-950/10 shadow-inner">
                     <iframe
                       className="absolute inset-0 w-full h-full"
                       src="https://www.figma.com/embed?embed_host=share&url=https://www.figma.com/deck/20e0kAnoIIITqTTVCdM87X/Untitled--Copy-?node-id=280-42"
@@ -215,15 +270,16 @@ export default function Portfolio() {
                   </div>
 
                   <p className="text-xs font-medium opacity-60 italic text-center">
-                    Use the arrows in the embed to navigate through the case
-                    study.
+                    Use arrows in the embed to navigate.
                   </p>
                 </div>
 
+                {/* CTA */}
                 <div className="space-y-6">
                   <h3 className="text-sm font-black uppercase tracking-widest border-b border-yellow-950/10 pb-2">
                     Check It Out
                   </h3>
+
                   <div className="flex flex-wrap gap-4">
                     <motion.a
                       href="https://afkaa.com"
@@ -240,11 +296,8 @@ export default function Portfolio() {
                       href="https://www.instagram.com/afkaaapp"
                       target="_blank"
                       rel="noopener noreferrer"
-                      whileHover={{
-                        scale: 1.03,
-                        backgroundColor: "rgba(120,53,15,0.3)",
-                      }}
-                      className="flex items-center justify-center gap-3 px-8 py-4 bg-yellow-900/10 text-yellow-950 border border-yellow-950/20 rounded-2xl font-black uppercase italic tracking-wider transition-colors"
+                      whileHover={{ scale: 1.03 }}
+                      className="flex items-center justify-center gap-3 px-8 py-4 bg-yellow-900/10 text-yellow-950 border border-yellow-950/20 rounded-2xl font-black uppercase italic tracking-wider"
                     >
                       Follow @afkaaapp <Instagram size={18} />
                     </motion.a>
@@ -283,7 +336,6 @@ export default function Portfolio() {
               }}
               className="group relative flex-shrink-0"
             >
-              {/* ✅ ONLY this wrapper controls size */}
               <div className="relative mx-auto h-[clamp(10rem,30vh,20rem)] w-[clamp(10rem,30vh,20rem)] 2xl:h-[clamp(16rem,34vh,28rem)] 2xl:w-[clamp(16rem,34vh,28rem)]">
                 <div className="absolute inset-0 rounded-[3rem] sm:rounded-[3.5rem] 2xl:rounded-full bg-gradient-to-b from-zinc-900 to-black border-[5px] 2xl:border-[6px] border-zinc-800/70 overflow-hidden shadow-2xl ring-1 ring-white/5">
                   <motion.div
@@ -332,12 +384,11 @@ export default function Portfolio() {
               animate="visible"
               className="mt-6 2xl:mt-8 max-w-md 2xl:max-w-2xl px-4 2xl:px-0"
             >
-              <p className="text-[clamp(0.95rem,2.1vh,1.15rem)] 2xl:text-[clamp(1.25rem,1.65vh,1.65rem)] leading-relaxed 2xl:leading-snug text-zinc-400 font-medium">
-                Software Engineer <span className="text-zinc-600 mx-1">•</span>{" "}
-                UX + Motion
-                <br className="hidden sm:block" />
-                Building tactile digital experiences in Toronto.
-              </p>
+<p className="text-[clamp(0.95rem,2.1vh,1.15rem)] 2xl:text-[clamp(1.25rem,1.65vh,1.65rem)] leading-relaxed 2xl:leading-snug text-zinc-400 font-medium">
+  Frontend Engineer working in React &amp; React Native
+  <br className="hidden sm:block" />
+  Shipping elegant interfaces with strong UX and motion design.
+</p>
             </motion.div>
 
             {/* 4) Social */}
@@ -366,7 +417,7 @@ export default function Portfolio() {
         {/* Row 2 */}
         <div className="w-full flex justify-center pb-6 flex-shrink-0 2xl:hidden">
           <AnimatePresence>
-            {showScrollCue  && (
+            {showScrollCue && (
               <motion.button
                 key="scroll-cue"
                 initial={{ opacity: 0, y: 10 }}
@@ -415,18 +466,20 @@ export default function Portfolio() {
                 </h2>
 
                 <p className="mt-2 2xl:mt-4 text-[13px] sm:text-[16px] 2xl:text-[19px] text-zinc-300/90 leading-snug 2xl:leading-snug">
-                  Software Engineer • Frontend (React / React Native) • UX +
-                  Motion
+                  Frontend Software Engineer — React & React Native with a focus
+                  on UX and motion design
                 </p>
               </div>
             </div>
 
             <p className="mt-5 sm:mt-8 2xl:mt-10 text-[0.9em] sm:text-[1em] 2xl:text-[1.12em] leading-relaxed 2xl:leading-relaxed text-zinc-300/90">
-              I’m a 4th-year Computer Science student at Thompson Rivers
-              University, based in Toronto. I build fast, accessible interfaces
-              and product experiences — mainly in React and React Native — then
-              polish them with strong UX and motion design so they feel
-              intentional, tactile, and never “template-y.”
+              I’m a Toronto-based Computer Science student who builds software
+              with a product and design mindset. I work primarily in React and
+              React Native, with a strong emphasis on UX, motion, and
+              interaction design, making interfaces feel intentional,
+              responsive, and human. I’ve shipped cross-platform products,
+              evaluated hundreds of production-level codebases, and care deeply
+              about how software feels to use, not just how it works.
             </p>
 
             <div className="mt-6 sm:mt-10 2xl:mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 2xl:gap-8">
