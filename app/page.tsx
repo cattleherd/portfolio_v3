@@ -602,7 +602,6 @@ export default function Portfolio() {
             stiffness: 180,
             damping: 15,
           }}
-          onClick={() => setIsExpanded((prev) => !prev)}
           className="fixed top-5 right-5 sm:top-8 sm:right-8 z-[110] cursor-pointer group"
         >
           <div className="relative h-[120px] w-[120px] rounded-full shadow-xl overflow-hidden ring-1 ring-white/5 transition-all duration-300 group-hover:scale-110">
