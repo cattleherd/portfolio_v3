@@ -345,24 +345,7 @@ export default function Portfolio() {
                 <footer className="mt-16 py-8 px-6 text-center text-yellow-950/60 text-sm border-t border-yellow-950/10">
                   <p className="mb-2">© {new Date().getFullYear()} Afkaa</p>
                   <div className="flex justify-center gap-6">
-                    <a
-                      href="/privacy"
-                      className="hover:text-yellow-950/90 transition-colors"
-                    >
-                      Privacy Policy
-                    </a>
-                    <a
-                      href="/terms"
-                      className="hover:text-yellow-950/90 transition-colors"
-                    >
-                      Terms of Use
-                    </a>
-                    <a
-                      href="https://www.instagram.com/afkaaapp"
-                      className="hover:text-yellow-950/90 transition-colors"
-                    >
-                      Instagram
-                    </a>
+                  
                   </div>
                 </footer>
               </motion.div>
@@ -543,7 +526,7 @@ export default function Portfolio() {
               with a product and design mindset. I work primarily in React and
               React Native, with a strong emphasis on UX, motion, and
               interaction design, making interfaces feel intentional,
-              responsive, and human. I’ve shipped cross-platform products,
+              delightful to use. I’ve shipped cross-platform products,
               evaluated hundreds of production-level codebases, and care deeply
               about how software feels to use, not just how it works.
             </p>
