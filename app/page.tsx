@@ -343,9 +343,7 @@ export default function Portfolio() {
                   </div>
                 </div>
                 <footer className="mt-16 py-8 px-6 text-center text-yellow-950/60 text-sm border-t border-yellow-950/10">
-                  <p className="mb-2">
-                    © {new Date().getFullYear()} Afkaa
-                  </p>
+                  <p className="mb-2">© {new Date().getFullYear()} Afkaa</p>
                   <div className="flex justify-center gap-6">
                     <a
                       href="/privacy"
@@ -592,10 +590,10 @@ export default function Portfolio() {
             </motion.div>
           )}
         </AnimatePresence>
-
         <motion.div
           ref={mascotRef}
-          onAnimationComplete={recenterPortal}
+          onAnimationComplete={() => recenterPortal()}
+          onPointerDownCapture={() => setIsExpanded((prev) => !prev)}
           initial={{ opacity: 0, scale: 0.6, x: 30 }}
           animate={{ opacity: 1, scale: 1, x: 0 }}
           transition={{
@@ -605,9 +603,9 @@ export default function Portfolio() {
             damping: 15,
           }}
           onClick={() => setIsExpanded((prev) => !prev)}
-          className="cursor-pointer group"
+          className="fixed top-5 right-5 sm:top-8 sm:right-8 z-[110] cursor-pointer group"
         >
-          <div className="pointer-events-none relative h-[120px] w-[120px] rounded-full shadow-xl overflow-hidden ring-1 ring-white/5 transition-all duration-300 group-hover:scale-110">
+          <div className="relative h-[120px] w-[120px] rounded-full shadow-xl overflow-hidden ring-1 ring-white/5 transition-all duration-300 group-hover:scale-110">
             <Rive src="/afkaa.riv" stateMachines="State Machine 1" />
           </div>
         </motion.div>
