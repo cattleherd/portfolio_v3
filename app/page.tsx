@@ -22,7 +22,7 @@ import {
   Gamepad2,
   Smartphone,
   Mail,
-  Workflow
+  Workflow,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -246,28 +246,27 @@ export default function Portfolio() {
                     />
                   </div>
                 </div>
-{/* Tech Stack */}
-<motion.div variants={itemVariants} className="space-y-6">
-  <h3 className="text-sm font-black uppercase tracking-widest border-b border-yellow-950/10 pb-2">
-    Tech Stack
-  </h3>
+                {/* Tech Stack */}
+                <motion.div variants={itemVariants} className="space-y-6">
+                  <h3 className="text-sm font-black uppercase tracking-widest border-b border-yellow-950/10 pb-2">
+                    Tech Stack
+                  </h3>
 
-  <div className="rounded-2xl bg-yellow-200 border border-yellow-950/10 p-6 sm:p-8">
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-      <FeatureItem
-        icon={Smartphone}
-        title="React Native + Expo"
-        desc="Cross-platform build: iOS and Android using React Native with Expo tooling."
-      />
-      <FeatureItem
-        icon={Workflow}
-        title="Rive + State Machines"
-        desc="Rive-driven animations powered by state machines that react to user input and UI state."
-      />
-    </div>
-  </div>
-</motion.div>
-
+                  <div className="rounded-2xl bg-yellow-200 border border-yellow-950/10 p-6 sm:p-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                      <FeatureItem
+                        icon={Smartphone}
+                        title="React Native + Expo"
+                        desc="Cross-platform build: iOS and Android using React Native with Expo tooling."
+                      />
+                      <FeatureItem
+                        icon={Workflow}
+                        title="Rive + State Machines"
+                        desc="Rive-driven animations powered by state machines that react to user input and UI state."
+                      />
+                    </div>
+                  </div>
+                </motion.div>
 
                 {/* Case Study */}
                 <div className="space-y-6 pt-8">
@@ -305,14 +304,14 @@ export default function Portfolio() {
                     Check It Out
                   </h3>
 
-                  <div className="flex flex-wrap gap-4">
+                  <div className="flex flex-col sm:flex-row flex-wrap gap-4 w-full max-w-md mx-auto">
                     <motion.a
                       href="https://afkaa.com"
                       target="_blank"
                       rel="noopener noreferrer"
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
-                      className="flex items-center justify-center gap-3 px-8 py-4 bg-yellow-950 text-yellow-50 rounded-2xl font-black uppercase italic tracking-wider shadow-xl shadow-yellow-900/20"
+                      className="flex-1 flex items-center justify-center gap-3 px-6 py-4 bg-yellow-950 text-yellow-50 rounded-2xl font-black uppercase italic tracking-wider shadow-xl shadow-yellow-900/20 min-w-0"
                     >
                       Try the Demo <ExternalLink size={18} />
                     </motion.a>
@@ -322,7 +321,8 @@ export default function Portfolio() {
                       target="_blank"
                       rel="noopener noreferrer"
                       whileHover={{ scale: 1.03 }}
-                      className="flex items-center justify-center gap-3 px-8 py-4 bg-yellow-900/10 text-yellow-950 border border-yellow-950/20 rounded-2xl font-black uppercase italic tracking-wider"
+                      whileTap={{ scale: 0.97 }}
+                      className="flex-1 flex items-center justify-center gap-3 px-6 py-4 bg-yellow-900/10 text-yellow-950 border border-yellow-950/20 rounded-2xl font-black uppercase italic tracking-wider min-w-0"
                     >
                       Follow @afkaaapp <Instagram size={18} />
                     </motion.a>
@@ -409,11 +409,7 @@ export default function Portfolio() {
               animate="visible"
               className="mt-6 2xl:mt-8 max-w-md 2xl:max-w-2xl px-4 2xl:px-0"
             >
-              <p className="text-[clamp(0.95rem,2.1vh,1.15rem)] 2xl:text-[clamp(1.25rem,1.65vh,1.65rem)] leading-relaxed 2xl:leading-snug text-zinc-400 font-medium">
-                Frontend Engineer working in React &amp; React Native
-                <br className="hidden sm:block" />
-                Shipping elegant interfaces with strong UX and motion design.
-              </p>
+              <h1>Software Developer / Motion Designer</h1>
             </motion.div>
 
             {/* 4) Social */}
@@ -497,16 +493,10 @@ export default function Portfolio() {
                 </h2>
 
                 <p className="mt-2 2xl:mt-4 text-[13px] sm:text-[16px] 2xl:text-[19px] text-zinc-300/90 leading-snug 2xl:leading-snug">
-                  Frontend Software Engineer — React & React Native with a focus
-                  on UX and motion design
+                  Software Engineer with a focus on UX and motion design
                 </p>
                 <p className="mt-2 sm:mt-3 text-[12px] sm:text-[14px] 2xl:text-[16px] text-yellow-400/90 font-semibold tracking-tight">
-                  Available for Summer 2026 Frontend / Product Engineering
-                  internships
-                  <span className="text-yellow-400/70">
-                    {" "}
-                    (Toronto or remote)
-                  </span>
+                  Open to Summer 2026 Software & Product Internships
                 </p>
               </div>
             </div>
