@@ -193,17 +193,30 @@ export default function Portfolio() {
 
               {/* Header */}
               <motion.div variants={itemVariants} className="mb-12">
-                <h2 className="text-xs sm:text-sm font-black uppercase tracking-[0.45em] mb-4 opacity-70 flex items-center gap-3">
-                  <span className="h-px w-8 bg-yellow-950/30" />
-                  Featured Project
-                </h2>
-
                 <h1 className="text-6xl sm:text-8xl md:text-9xl font-black uppercase italic tracking-tighter leading-[0.82] mb-6">
                   Afkaa
                 </h1>
 
                 <p className="text-2xl sm:text-3xl font-bold leading-tight tracking-tight max-w-2xl">
                   A fun, gamified app that makes learning Somali feel like play.
+                </p>
+              </motion.div>
+
+              {/* New: Why Afkaa? - Story / Mission */}
+              <motion.div
+                variants={itemVariants}
+                className="mb-16 space-y-6 max-w-3xl text-lg leading-relaxed"
+              >
+                <h3 className="text-xl sm:text-2xl font-black uppercase tracking-wide mb-6">
+                  Why Afkaa?
+                </h3>
+                <p className="italic opacity-90">
+                  Without action, a language risks fading in just one
+                  generation. Many youth in the West cannot speak their mother
+                  tongue and struggle with identity, belonging, and connection
+                  to their elders, culture, and history. Afkaa exists to close
+                  that gap; not by shaming, but by making learning Somali
+                  intuitive, engaging, and fun.
                 </p>
               </motion.div>
 
@@ -221,7 +234,7 @@ export default function Portfolio() {
                 </div>
 
                 <p className="mt-3 text-xs font-medium opacity-60 italic text-center">
-                  Motion + interaction reel (30s)
+                  Demo reel (30s)
                 </p>
               </motion.div>
 
@@ -233,7 +246,7 @@ export default function Portfolio() {
                     Core Features
                   </h3>
 
-                  <div className=" rounded-2xl grid grid-cols-1 sm:grid-cols-2 gap-8">
+                  <div className="rounded-2xl grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <FeatureItem
                       icon={Gamepad2}
                       title="Gamified Quizzing"
@@ -246,6 +259,7 @@ export default function Portfolio() {
                     />
                   </div>
                 </div>
+
                 {/* Tech Stack */}
                 <motion.div variants={itemVariants} className="space-y-6">
                   <h3 className="text-sm font-black uppercase tracking-widest border-b border-yellow-950/10 pb-2">
@@ -328,6 +342,31 @@ export default function Portfolio() {
                     </motion.a>
                   </div>
                 </div>
+                <footer className="mt-16 py-8 px-6 text-center text-yellow-950/60 text-sm border-t border-yellow-950/10">
+                  <p className="mb-2">
+                    © {new Date().getFullYear()} Afkaa
+                  </p>
+                  <div className="flex justify-center gap-6">
+                    <a
+                      href="/privacy"
+                      className="hover:text-yellow-950/90 transition-colors"
+                    >
+                      Privacy Policy
+                    </a>
+                    <a
+                      href="/terms"
+                      className="hover:text-yellow-950/90 transition-colors"
+                    >
+                      Terms of Use
+                    </a>
+                    <a
+                      href="https://www.instagram.com/afkaaapp"
+                      className="hover:text-yellow-950/90 transition-colors"
+                    >
+                      Instagram
+                    </a>
+                  </div>
+                </footer>
               </motion.div>
             </motion.div>
           )}
