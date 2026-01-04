@@ -20,6 +20,9 @@ import {
   Instagram,
   ArrowUpRight,
   Gamepad2,
+  Smartphone,
+  Mail,
+  Workflow
 } from "lucide-react";
 import Image from "next/image";
 
@@ -230,7 +233,7 @@ export default function Portfolio() {
                     Core Features
                   </h3>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                  <div className=" rounded-2xl grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <FeatureItem
                       icon={Gamepad2}
                       title="Gamified Quizzing"
@@ -243,6 +246,28 @@ export default function Portfolio() {
                     />
                   </div>
                 </div>
+{/* Tech Stack */}
+<motion.div variants={itemVariants} className="space-y-6">
+  <h3 className="text-sm font-black uppercase tracking-widest border-b border-yellow-950/10 pb-2">
+    Tech Stack
+  </h3>
+
+  <div className="rounded-2xl bg-yellow-200 border border-yellow-950/10 p-6 sm:p-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+      <FeatureItem
+        icon={Smartphone}
+        title="React Native + Expo"
+        desc="Cross-platform build: iOS and Android using React Native with Expo tooling."
+      />
+      <FeatureItem
+        icon={Workflow}
+        title="Rive + State Machines"
+        desc="Rive-driven animations powered by state machines that react to user input and UI state."
+      />
+    </div>
+  </div>
+</motion.div>
+
 
                 {/* Case Study */}
                 <div className="space-y-6 pt-8">
@@ -384,11 +409,11 @@ export default function Portfolio() {
               animate="visible"
               className="mt-6 2xl:mt-8 max-w-md 2xl:max-w-2xl px-4 2xl:px-0"
             >
-<p className="text-[clamp(0.95rem,2.1vh,1.15rem)] 2xl:text-[clamp(1.25rem,1.65vh,1.65rem)] leading-relaxed 2xl:leading-snug text-zinc-400 font-medium">
-  Frontend Engineer working in React &amp; React Native
-  <br className="hidden sm:block" />
-  Shipping elegant interfaces with strong UX and motion design.
-</p>
+              <p className="text-[clamp(0.95rem,2.1vh,1.15rem)] 2xl:text-[clamp(1.25rem,1.65vh,1.65rem)] leading-relaxed 2xl:leading-snug text-zinc-400 font-medium">
+                Frontend Engineer working in React &amp; React Native
+                <br className="hidden sm:block" />
+                Shipping elegant interfaces with strong UX and motion design.
+              </p>
             </motion.div>
 
             {/* 4) Social */}
@@ -409,6 +434,12 @@ export default function Portfolio() {
                 label="LinkedIn"
                 color="bg-[#0077B5]/90"
                 icon={Linkedin}
+              />
+              <NavIcon
+                href="mailto:radwan.hussein@protonmail.com"
+                label="Email"
+                color="bg-yellow-500"
+                icon={Mail}
               />
             </motion.div>
           </div>
@@ -468,6 +499,14 @@ export default function Portfolio() {
                 <p className="mt-2 2xl:mt-4 text-[13px] sm:text-[16px] 2xl:text-[19px] text-zinc-300/90 leading-snug 2xl:leading-snug">
                   Frontend Software Engineer — React & React Native with a focus
                   on UX and motion design
+                </p>
+                <p className="mt-2 sm:mt-3 text-[12px] sm:text-[14px] 2xl:text-[16px] text-yellow-400/90 font-semibold tracking-tight">
+                  Available for Summer 2026 Frontend / Product Engineering
+                  internships
+                  <span className="text-yellow-400/70">
+                    {" "}
+                    (Toronto or remote)
+                  </span>
                 </p>
               </div>
             </div>
