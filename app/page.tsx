@@ -522,7 +522,7 @@ export default function Portfolio() {
             </div>
 
             <p className="mt-5 sm:mt-8 2xl:mt-10 text-[0.9em] sm:text-[1em] 2xl:text-[1.12em] leading-relaxed 2xl:leading-relaxed text-zinc-300/90">
-              I’m a Toronto-based Computer Science student who builds software
+              I’m a Toronto-based 4th year computer Science student who builds software
               with a product and design mindset. I work primarily in React and
               React Native, with a strong emphasis on UX, motion, and
               interaction design, making interfaces feel intentional,
